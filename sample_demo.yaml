@@ -26,7 +26,7 @@ proxy-groups:
       - ⚡ 自动选择
       - DIRECT
       - 🇯🇵 YYJP_Lazycat_IIJ
-
+      - 🇯🇵 YYJP_Green_HY2
   - name: bageJP中转
     type: select
     proxies:
