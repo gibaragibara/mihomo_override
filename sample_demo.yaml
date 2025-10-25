@@ -571,6 +571,8 @@ rules: # 注意，分流规则是按自上而下、首次命中即停的原则�
   - DOMAIN-SUFFIX,szbdyd.com,REJECT
   - RULE-SET,category-ads-all,🛑 广告拦截
   - RULE-SET,ChinaMax,🔒 国内服务
+  - RULE-SET,geolocation-cn,🔒 国内服务
+  - RULE-SET,cn,🔒 国内服务,no-resolve
   - RULE-SET,category-ai-chat-!cn,💬 AI 服务
   - RULE-SET,youtube,📹 油管视频
   - RULE-SET,coursera,📚 教育资源
