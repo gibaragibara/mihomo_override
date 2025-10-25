@@ -23,7 +23,7 @@ proxy-groups:
   - name: gbf
     type: select
     proxies:
-      - ♻️ 自动选择
+      - ⚡ 自动选择
       - DIRECT
       - 🇯🇵 YYJP_Lazycat_IIJ
 
