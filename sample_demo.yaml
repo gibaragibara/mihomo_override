@@ -27,6 +27,11 @@ proxy-groups:
       - DIRECT
       - 🇯🇵 YYJP_Lazycat_IIJ
       - 🇯🇵 YYJP_Green_HY2
+  - name: 月流量100G拼车给gbf用的
+    type: select
+    include-all: true
+    filter: (?i)拼车
+
   - name: bageJP中转
     type: select
     proxies:
