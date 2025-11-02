@@ -28,6 +28,7 @@ proxy-groups:
       - DIRECT
       - 🇯🇵 YYJP_Lazycat_IIJ
       - 🇯🇵 YYJP_Green_HY2
+      - 🇺🇸 Shinagawa
   - name: 月流量100G拼车给gbf用的
     type: select
     include-all: true
@@ -37,12 +38,12 @@ proxy-groups:
     type: select
     proxies:
       - 🇺🇸 YYUS_MegaBox
+      - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
   - name: bageJP落地
     type: select
     proxies:
       - 🇯🇵 YYJP_BAGE_Chained
-
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
