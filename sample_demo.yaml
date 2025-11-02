@@ -566,6 +566,7 @@ rule-providers:
 rules: # 注意，分流规则是按自上而下、首次命中即停的原则进行匹配，因此重要的规则应该放前面
   - DOMAIN-SUFFIX,akamaized.net,gbf
   - DOMAIN-SUFFIX,granbluefantasy.jp,gbf
+  - DOMAIN-SUFFIX,mobage.jp,gbf  
   - DOMAIN-SUFFIX,dmm.co.jp,🇯🇵 日本节点
   - DOMAIN-SUFFIX,wenku8.net,🇸🇬 狮城节点
   - DOMAIN-KEYWORD,wenku8,🇸🇬 狮城节点
