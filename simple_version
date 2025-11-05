@@ -1,0 +1,414 @@
+# =========================
+# 策略组
+# =========================
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - 🚀 手动切换
+      - ⚡ 自动选择
+      - DIRECT
+      - REJECT
+
+  - name: 🚀 手动切换
+    type: select
+    include-all: true
+
+  - name: ⚡ 自动选择
+    type: url-test
+    include-all: true    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    lazy: false
+
+  - name: 🔒 国内服务
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+      - 🚀 节点选择
+      - ⚡ 自动选择
+
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - ⚡ 自动选择
+      - DIRECT
+      - REJECT
+
+  - name: 🛑 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      - 🚀 节点选择
+      - ⚡ 自动选择
+
+# =========================
+# 基础配置
+# =========================
+port: 7890                         # 本机 HTTP 代理端口
+socks-port: 7891                   # 本机 SOCKS5 代理端口
+allow-lan: true                    # 允许局域网设备连接（如不共享，建议改为 false）
+mode: rule                         # 按规则分流（global 会全局走同一路由）
+log-level: info                    # 生产默认 info；排障需要改 debug
+unified-delay: true                # 以“完成握手后”的 RTT 统计延迟，更贴近真实体验
+tcp-concurrent: true               # 并发拨号择优保留，跨境网络通常更稳更快
+find-process-mode: strict          # 更精准地识别连接来源进程（Windows 需管理员权限）
+global-client-fingerprint: chrome  # 统一 TLS 指纹为 Chrome；如遇个别站点校验可改 randomized
+
+# =========================
+# DNS配置
+# =========================
+dns:
+  enable: true
+  listen: '127.0.0.1:5335'
+  use-system-hosts: false          # 若你改过系统 hosts，可改为 true
+  enhanced-mode: fake-ip           # 使用虚拟 IP 提升兼容性与分流精度
+  fake-ip-range: 198.18.0.1/16     # 推荐从网段基地址 .0 开始（IETF 预留测试网段）
+
+  # bootstrap：解析 DoH/DoT 域名的起始解析器（纯 IP、直连可达）
+  default-nameserver: [180.76.76.76, 182.254.118.118, 8.8.8.8, 180.184.2.2]
+
+  # 直连的主上游解析器（国内环境常作为“本地优先”）
+  nameserver: [180.76.76.76, 119.29.29.29, 180.184.1.1, 223.5.5.5, 8.8.8.8, 'https://223.6.6.6/dns-query#h3=true', 'https://dns.alidns.com/dns-query', 'https://cloudflare-dns.com/dns-query', 'https://doh.pub/dns-query']
+
+  # 海外优先兜底解析
+  fallback: ['https://000000.dns.nextdns.io/dns-query#h3=true', 'https://dns.alidns.com/dns-query', 'https://doh.pub/dns-query', 'https://public.dns.iij.jp/dns-query', 'https://101.101.101.101/dns-query', 'https://208.67.220.220/dns-query', 'tls://8.8.4.4', 'tls://1.0.0.1:853', 'https://cloudflare-dns.com/dns-query', 'https://dns.google/dns-query']
+
+  # 触发 fallback 的判据
+  fallback-filter: { geoip: true, ipcidr: [240.0.0.0/4, 0.0.0.0/32, 127.0.0.1/32], domain: [+.google.com, +.facebook.com, +.twitter.com, +.youtube.com, +.xn--ngstr-lra8j.com, +.google.cn, +.googleapis.cn, +.googleapis.com, +.gvt1.com] }
+
+  # 对这些域名/场景不使用 fake-ip，避免连通性/认证异常
+  fake-ip-filter: ['*.lan', 'stun.*.*.*', 'stun.*.*', time.windows.com, time.nist.gov, time.apple.com, time.asia.apple.com, '*.ntp.org.cn', '*.openwrt.pool.ntp.org', time1.cloud.tencent.com, time.ustc.edu.cn, pool.ntp.org, ntp.ubuntu.com, ntp.aliyun.com, ntp1.aliyun.com, ntp2.aliyun.com, ntp3.aliyun.com, ntp4.aliyun.com, ntp5.aliyun.com, ntp6.aliyun.com, ntp7.aliyun.com, time1.aliyun.com, time2.aliyun.com, time3.aliyun.com, time4.aliyun.com, time5.aliyun.com, time6.aliyun.com, time7.aliyun.com, '*.time.edu.cn', time1.apple.com, time2.apple.com, time3.apple.com, time4.apple.com, time5.apple.com, time6.apple.com, time7.apple.com, time1.google.com, time2.google.com, time3.google.com, time4.google.com, music.163.com, '*.music.163.com', '*.126.net', musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, '*.kuwo.cn', api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, '*.y.qq.com', streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, '*.xiami.com', '*.music.migu.cn', music.migu.cn, '*.msftconnecttest.com', '*.msftncsi.com', localhost.ptlogin2.qq.com, '*.*.*.srv.nintendo.net', '*.*.stun.playstation.net', 'xbox.*.*.microsoft.com', '*.ipv6.microsoft.com', '*.*.xboxlive.com', speedtest.cros.wr.pvp.net]
+
+# =========================
+# 配置文件管理
+# =========================
+profile:
+  store-selected: true             # 记住上次选择的策略/节点
+  store-fake-ip: false             # 存储 fake-ip 映射会导致DNS泄露
+
+# =========================
+# 域名/流量嗅探
+# =========================
+sniffer:
+  enable: true
+  parse-pure-ip: true              # 对直连 IP 连接尝试解析出 SNI/Host
+  sniff:
+    TLS:
+      ports: [443, 8443]           # 要嗅探的 TLS 流量端口，包括标准 HTTPS 端口 443 和备用的 8443
+    HTTP:
+      ports: [80, 8080-8880]       # 要嗅探的 HTTP 流量端口，包括标准 HTTP 端口 80 和常用的 8080-8880
+      override-destination: true   # 用嗅探到的域名覆盖原始目标 IP/域名
+
+# =========================
+# Geo 数据获取
+# =========================
+geodata-mode: true
+geo-auto-update: true
+geodata-loader: standard
+geo-update-interval: 24
+geox-url:
+  geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
+  geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
+  mmdb: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb
+  asn: https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb
+
+# =========================
+# 规则集获取
+# =========================
+rule-providers:
+  category-ads-all:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ads-all.mrs
+    path: ./ruleset/category-ads-all.mrs
+    interval: 86400
+  category-ai-chat-!cn:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-chat-!cn.mrs
+    path: ./ruleset/category-ai-chat-!cn.mrs
+    interval: 86400
+  youtube:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/youtube.mrs
+    path: ./ruleset/youtube.mrs
+    interval: 86400
+  google:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/google.mrs
+    path: ./ruleset/google.mrs
+    interval: 86400
+  private:
+    type: http
+    format: mrs
+    behavior: ipcidr
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/private.mrs
+    path: ./ruleset/private.mrs
+    interval: 86400
+  geolocation-cn:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/geolocation-cn.mrs
+    path: ./ruleset/geolocation-cn.mrs
+    interval: 86400
+  cn:
+    type: http
+    format: mrs
+    behavior: ipcidr
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs
+    path: ./ruleset/cn.mrs
+    interval: 86400
+  telegram:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
+    path: ./ruleset/telegram.mrs
+    interval: 86400
+  github:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/github.mrs
+    path: ./ruleset/github.mrs
+    interval: 86400
+  gitlab:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/gitlab.mrs
+    path: ./ruleset/gitlab.mrs
+    interval: 86400
+  microsoft:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft.mrs
+    path: ./ruleset/microsoft.mrs
+    interval: 86400
+  apple:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple.mrs
+    path: ./ruleset/apple.mrs
+    interval: 86400
+  facebook:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/facebook.mrs
+    path: ./ruleset/facebook.mrs
+    interval: 86400
+  instagram:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/instagram.mrs
+    path: ./ruleset/instagram.mrs
+    interval: 86400
+  twitter:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitter.mrs
+    path: ./ruleset/twitter.mrs
+    interval: 86400
+  tiktok:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs
+    path: ./ruleset/tiktok.mrs
+    interval: 86400
+  linkedin:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/linkedin.mrs
+    path: ./ruleset/linkedin.mrs
+    interval: 86400
+  netflix:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/netflix.mrs
+    path: ./ruleset/netflix.mrs
+    interval: 86400
+  hulu:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/hulu.mrs
+    path: ./ruleset/hulu.mrs
+    interval: 86400
+  disney:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/disney.mrs
+    path: ./ruleset/disney.mrs
+    interval: 86400
+  hbo:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/hbo.mrs
+    path: ./ruleset/hbo.mrs
+    interval: 86400
+  amazon:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/amazon.mrs
+    path: ./ruleset/amazon.mrs
+    interval: 86400
+  bahamut:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/bahamut.mrs
+    path: ./ruleset/bahamut.mrs
+    interval: 86400
+  steam:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs
+    path: ./ruleset/steam.mrs
+    interval: 86400
+  epicgames:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/epicgames.mrs
+    path: ./ruleset/epicgames.mrs
+    interval: 86400
+  ea:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/ea.mrs
+    path: ./ruleset/ea.mrs
+    interval: 86400
+  ubisoft:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/ubisoft.mrs
+    path: ./ruleset/ubisoft.mrs
+    interval: 86400
+  blizzard:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/blizzard.mrs
+    path: ./ruleset/blizzard.mrs
+    interval: 86400
+  coursera:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/coursera.mrs
+    path: ./ruleset/coursera.mrs
+    interval: 86400
+  edx:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/edx.mrs
+    path: ./ruleset/edx.mrs
+    interval: 86400
+  udemy:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/udemy.mrs
+    path: ./ruleset/udemy.mrs
+    interval: 86400
+  khanacademy:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/khanacademy.mrs
+    path: ./ruleset/khanacademy.mrs
+    interval: 86400
+  category-scholar-!cn:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-scholar-!cn.mrs
+    path: ./ruleset/category-scholar-!cn.mrs
+    interval: 86400
+  aws:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/aws.mrs
+    path: ./ruleset/aws.mrs
+    interval: 86400
+  azure:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/azure.mrs
+    path: ./ruleset/azure.mrs
+    interval: 86400
+  digitalocean:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/digitalocean.mrs
+    path: ./ruleset/digitalocean.mrs
+    interval: 86400
+  heroku:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/heroku.mrs
+    path: ./ruleset/heroku.mrs
+    interval: 86400
+  dropbox:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/dropbox.mrs
+    path: ./ruleset/dropbox.mrs
+    interval: 86400
+  geolocation-!cn:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/geolocation-!cn.mrs
+    path: ./ruleset/geolocation-!cn.mrs
+    interval: 86400
+  ChinaMax:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMax/ChinaMax.list
+    path: ./ruleset/ChinaMax.list
+    interval: 86400
+# =========================
+# 分流规则
+# =========================
+rules: # 注意，分流规则是按自上而下、首次命中即停的原则进行匹配，因此重要的规则应该放前面
+  - DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT
+  - DOMAIN-SUFFIX,data.bilibili.com,REJECT
+  - DOMAIN-SUFFIX,szbdyd.com,REJECT
+  - RULE-SET,category-ads-all,🛑 广告拦截
+  - RULE-SET,ChinaMax,🔒 国内服务
+  - RULE-SET,geolocation-cn,🔒 国内服务
+  - RULE-SET,cn,🔒 国内服务,no-resolve
+  - MATCH,🐟 漏网之鱼
