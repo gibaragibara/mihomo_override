@@ -37,7 +37,6 @@ proxy-groups:
   - name: bageJP中转
     type: select
     proxies:
-      - 🇺🇸 YYUS_MegaBox
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
   - name: bageJP落地
