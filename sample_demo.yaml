@@ -39,6 +39,7 @@ proxy-groups:
     proxies:
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
+      - 🇺🇸 YYUS_Malibu
   - name: bageJP落地
     type: select
     proxies:
