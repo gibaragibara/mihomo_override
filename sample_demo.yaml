@@ -13,6 +13,7 @@ proxy-groups:
       - 🇺🇲 美国节点
       - ⚡ 自动选择
       - bageJP落地
+      - HK落地      
       - DIRECT
       - REJECT
 
@@ -40,10 +41,13 @@ proxy-groups:
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Malibu
-  - name: bageJP落地
+  - name: HK中转
     type: select
     proxies:
-      - 🇯🇵 YYJP_BAGE_Chained
+      - 🇺🇸 Shinagawa
+      - 🇯🇵 YYJP_GREEN
+      - 🇺🇸 YYUS_Malibu
+      
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
@@ -205,7 +209,16 @@ proxy-groups:
       - DIRECT
       - 🚀 节点选择
       - ⚡ 自动选择
-
+      
+  - name: bageJP落地
+    type: select
+    proxies:
+      - 🇯🇵 YYJP_BAGE_Chained
+      
+  - name: HK落地
+    type: select
+    proxies:
+      - 🇯🇵 YYJP_BAGE_Chained
 # =========================
 # 基础配置
 # =========================
