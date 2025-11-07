@@ -218,7 +218,7 @@ proxy-groups:
   - name: HK落地
     type: select
     proxies:
-      - 🇯🇵 YYJP_BAGE_Chained
+      - 🇭🇰 zouterHK落地
 # =========================
 # 基础配置
 # =========================
