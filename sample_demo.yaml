@@ -30,6 +30,7 @@ proxy-groups:
       - 🇯🇵 YYJP_Lazycat_IIJ
       - 🇯🇵 YYJP_Green_HY2
       - 🇺🇸 Shinagawa
+      - 🇯🇵 gomami
   - name: 月流量100G拼车给gbf用的
     type: select
     include-all: true
@@ -38,12 +39,14 @@ proxy-groups:
   - name: bageJP中转
     type: select
     proxies:
+      - 🇯🇵 gomami
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Echo
   - name: HK中转
     type: select
     proxies:
+      - 🇯🇵 gomami
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Echo
