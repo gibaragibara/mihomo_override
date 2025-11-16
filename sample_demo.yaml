@@ -43,6 +43,7 @@ proxy-groups:
       - 🇺🇸 YYUS_Echo
   - name: HK中转
     type: select
+    proxies:
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Echo
