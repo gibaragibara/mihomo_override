@@ -27,7 +27,7 @@ proxy-groups:
       - ⚡ 自动选择
       - 月流量200G拼车给gbf用的
       - DIRECT
-      - 🇯🇵 YYJP_Isif_COP
+      - 🇯🇵 ISIF_COP
       - 🇯🇵 YYJP_Lazycat_IIJ
       - 🇯🇵 YYJP_Green_HY2
       - 🇺🇸 Shinagawa
@@ -39,14 +39,14 @@ proxy-groups:
   - name: bageJP中转
     type: select
     proxies:
-      - 🇯🇵 YYJP_Isif_COP
+      - 🇯🇵 ISIF_COP
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Echo
   - name: HK中转
     type: select
     proxies:
-      - 🇯🇵 YYJP_Isif_COP
+      - 🇯🇵 ISIF_COP
       - 🇺🇸 Shinagawa
       - 🇯🇵 YYJP_GREEN
       - 🇺🇸 YYUS_Echo
