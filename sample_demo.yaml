@@ -572,12 +572,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMax/ChinaMax.list
     path: ./ruleset/ChinaMax.list
     interval: 86400
-  Xbox:
-    type: http
-    behavior: classical
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Xbox/Xbox.yaml
-    path: ./ruleset/Xbox.yaml
-    interval: 86400
 # =========================
 # 分流规则
 # =========================
@@ -599,7 +593,6 @@ rules: # 注意，分流规则是按自上而下、首次命中即停的原则�
   - DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT
   - DOMAIN-SUFFIX,data.bilibili.com,REJECT
   - DOMAIN-SUFFIX,szbdyd.com,REJECT
-  - RULE-SET,Xbox,DIRECT
   - RULE-SET,category-ads-all,🛑 广告拦截
   - RULE-SET,ChinaMax,🔒 国内服务
   - RULE-SET,geolocation-cn,🔒 国内服务
