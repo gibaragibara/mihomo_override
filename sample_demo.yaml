@@ -13,7 +13,6 @@ proxy-groups:
       - 🇺🇲 美国节点
       - ⚡ 自动选择
       - bageJP落地
-      - HK落地      
       - DIRECT
       - REJECT
 
@@ -36,14 +35,7 @@ proxy-groups:
     include-all: true
     filter: (?i)拼车
 
-  - name: bageJP中转
-    type: select
-    proxies:
-      - 🇯🇵 YYJP_ISIF_COP
-      - 🇯🇵 shinagawa-ss2022
-      - 🇯🇵 YYJP_Shinagawa
-      - 🇺🇸 YYUS_Echo
-  - name: HK中转
+  - name: 链式中转
     type: select
     proxies:
       - 🇯🇵 YYJP_ISIF_COP
@@ -218,11 +210,8 @@ proxy-groups:
     type: select
     proxies:
       - 🇯🇵 YYJP_BAGE_Chained
-      
-  - name: HK落地
-    type: select
-    proxies:
       - 🇭🇰 zouterHK落地
+      
 # =========================
 # 基础配置
 # =========================
