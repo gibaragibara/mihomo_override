@@ -27,7 +27,7 @@ proxy-groups:
       - 月流量200G拼车给gbf用的
       - DIRECT
       - 🇯🇵 YYJP_ISIF_COP
-      - 🇯🇵 YYJP_Lazycat_IIJ
+      - 🇯🇵 Green_Gen2
       - 🇯🇵 YYJP_Shinagawa
       - 🇯🇵 shinagawa-ss2022
   - name: 月流量200G拼车给gbf用的
@@ -42,6 +42,7 @@ proxy-groups:
       - 🇯🇵 shinagawa-ss2022
       - 🇯🇵 YYJP_Shinagawa
       - 🇺🇸 YYUS_Echo
+      - 🇯🇵 Green_Gen2
       
   - name: 🇭🇰 香港节点
     type: select
