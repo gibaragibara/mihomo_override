@@ -41,7 +41,7 @@ proxy-groups:
       - 🇯🇵 shinagawa-ss2022
       - 🇯🇵 YYJP_Shinagawa
       - 🇺🇸 YYUS_Echo
-      
+      - 🇺🇸 DMIT_ProWee
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
@@ -79,8 +79,9 @@ proxy-groups:
   - name: 💬 AI 服务
     type: select
     proxies:
-      - 🇺🇸 YYUS_SixtyNet
       - 🚀 节点选择
+      - 🇺🇸 YYUS_Echo
+      - 🇺🇸 DMIT_ProWee
       - ⚡ 自动选择
       - DIRECT
       - REJECT
@@ -96,7 +97,8 @@ proxy-groups:
     type: select
     proxies:
       - 🚀 节点选择
-      - 🇺🇸 YYUS_SixtyNet
+      - 🇺🇸 YYUS_Echo
+      - 🇺🇸 DMIT_ProWee
       - ⚡ 自动选择
       - DIRECT
       - REJECT
