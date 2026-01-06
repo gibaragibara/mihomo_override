@@ -4,15 +4,12 @@
 proxy-groups:
   - name: 🚀 节点选择
     type: select
-    proxies:
-      - 🚀 手动切换
-      - ⚡ 自动选择
-      - DIRECT
-      - REJECT
-
-  - name: 🚀 手动切换
-    type: select
     include-all: true
+    proxies:
+      - DIRECT
+      - ⚡ 自动选择
+      - REJECT
+    
 
   - name: ⚡ 自动选择
     type: url-test
