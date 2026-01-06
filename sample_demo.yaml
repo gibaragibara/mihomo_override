@@ -22,18 +22,10 @@ proxy-groups:
 
   - name: gbf
     type: select
+    include-all: true
     proxies:
       - ⚡ 自动选择
-      - 月流量200G拼车给gbf用的
       - DIRECT
-      - 🇯🇵 YYJP_Neburst
-      - 🇯🇵 YYJP_Shinagawa
-      - 🇯🇵 YYJP_Shinagawa_SS
-  - name: 月流量200G拼车给gbf用的
-    type: select
-    include-all: true
-    filter: (?i)拼车
-
   - name: 链式中转
     type: select
     proxies:
