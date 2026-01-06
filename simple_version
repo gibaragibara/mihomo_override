@@ -5,6 +5,7 @@ proxy-groups:
   - name: 🚀 节点选择
     type: select
     include-all: true
+    filter: "(?i)^(?!.*(自动|手动|选择|Direct|Reject|Fail|Load|Twitch|Netflix)).*"
     proxies:
       - DIRECT
       - ⚡ 自动选择
