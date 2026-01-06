@@ -9,8 +9,6 @@ proxy-groups:
       - DIRECT
       - ⚡ 自动选择
       - REJECT
-    
-
   - name: ⚡ 自动选择
     type: url-test
     include-all: true   
