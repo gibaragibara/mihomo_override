@@ -80,6 +80,7 @@ proxy-groups:
     type: select
     proxies:
       - 🚀 节点选择
+      - 🇸🇬 狮城节点
       - 🇺🇸 YYUS_Echo
       - 🇺🇸 DMIT_ProWee
       - ⚡ 自动选择
@@ -97,6 +98,7 @@ proxy-groups:
     type: select
     proxies:
       - 🚀 节点选择
+      - 🇸🇬 狮城节点
       - 🇺🇸 YYUS_Echo
       - 🇺🇸 DMIT_ProWee
       - ⚡ 自动选择
