@@ -28,7 +28,7 @@ proxy-groups:
       - DIRECT
       - 🇯🇵 YYJP_Neburst
       - 🇯🇵 YYJP_Shinagawa
-      - 🇯🇵 shinagawa-ss2022
+      - 🇯🇵 YYJP_Shinagawa_SS
   - name: 月流量200G拼车给gbf用的
     type: select
     include-all: true
@@ -38,7 +38,6 @@ proxy-groups:
     type: select
     proxies:
       - 🇯🇵 YYJP_Neburst
-      - 🇯🇵 shinagawa-ss2022
       - 🇯🇵 YYJP_Shinagawa
       - 🇺🇸 YYUS_Echo
       - 🇺🇸 DMIT_ProWee
