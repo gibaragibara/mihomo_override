@@ -32,7 +32,7 @@ proxy-groups:
       - 🇯🇵 YYJP_Neburst
       - 🇯🇵 YYJP_Shinagawa
       - 🇺🇸 YYUS_Echo
-      - 🇺🇸 DMIT_ProWee
+      - 🇺🇸 YYUS_DMIT_ProWee
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
@@ -73,7 +73,7 @@ proxy-groups:
       - 🚀 节点选择
       - 🇸🇬 狮城节点
       - 🇺🇸 YYUS_Echo
-      - 🇺🇸 DMIT_ProWee
+      - 🇺🇸 YYUS_DMIT_ProWee
       - ⚡ 自动选择
       - DIRECT
       - REJECT
@@ -91,7 +91,7 @@ proxy-groups:
       - 🚀 节点选择
       - 🇸🇬 狮城节点
       - 🇺🇸 YYUS_Echo
-      - 🇺🇸 DMIT_ProWee
+      - 🇺🇸 YYUS_DMIT_ProWee
       - ⚡ 自动选择
       - DIRECT
       - REJECT
