@@ -204,7 +204,6 @@ proxy-groups:
     type: select
     proxies:
       - 🇯🇵 YYJP_BAGE_Chained
-      - 🇭🇰 zouterHK落地
       
 # =========================
 # 基础配置
