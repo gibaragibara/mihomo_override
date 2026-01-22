@@ -117,6 +117,7 @@ proxy-groups:
     type: select
     proxies:
       - 🚀 节点选择
+      - bageJP落地
       - ⚡ 自动选择
       - DIRECT
       - REJECT
