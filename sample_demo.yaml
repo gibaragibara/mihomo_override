@@ -584,6 +584,7 @@ rules: # 注意，分流规则是按自上而下、首次命中即停的原则�
   - PROCESS-NAME,QQ.exe,DIRECT
   - PROCESS-NAME,navicat.exe,DIRECT
   - PROCESS-NAME,极空间.exe,DIRECT  
+  - PROCESS-NAME,WeChat,DIRECT
   - PROCESS-NAME,Weixin.exe,DIRECT
   - DOMAIN-SUFFIX,mcdn.bilivideo.cn,REJECT
   - DOMAIN-SUFFIX,data.bilibili.com,REJECT
