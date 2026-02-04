@@ -337,6 +337,12 @@ rule-providers:
     url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml
     path: ./ruleset/Telegram.yaml
     interval: 86400
+  pilipili:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml
+    path: ./ruleset/BiliBili.yaml
+    interval: 86400
   github:
     type: http
     format: mrs
@@ -608,6 +614,7 @@ rules: # 注意，分流规则是按自上而下、首次命中即停的原则�
   - RULE-SET,github,🐱 Github
   - RULE-SET,gitlab,🐱 Github
   - RULE-SET,microsoft,Ⓜ️ 微软服务
+  - RULE-SET,pilipili,DIRECT
   - RULE-SET,apple,🍏 苹果服务
   - RULE-SET,facebook,🌐 社交媒体
   - RULE-SET,instagram,🌐 社交媒体
