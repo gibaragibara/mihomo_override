@@ -174,6 +174,12 @@ rule-providers:
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
     path: ./ruleset/telegram.mrs
     interval: 86400
+  pilipili:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml
+    path: ./ruleset/BiliBili.yaml
+    interval: 86400
   github:
     type: http
     format: mrs
@@ -407,5 +413,6 @@ rules: # 注意，分流规则是按自上而下、首次命中即停的原则�
   - RULE-SET,category-ads-all,🛑 广告拦截
   - RULE-SET,ChinaMax,🔒 国内服务
   - RULE-SET,geolocation-cn,🔒 国内服务
+  - RULE-SET,pilipili,🔒 国内服务
   - RULE-SET,cn,🔒 国内服务,no-resolve
   - MATCH,🐟 漏网之鱼
