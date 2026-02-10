@@ -14,7 +14,7 @@ proxy-groups:
     url: https://www.gstatic.com/generate_204
     interval: 300
     tolerance: 50
-    lazy: false
+    lazy: true
 
   - name: 🔒 国内服务
     type: select
