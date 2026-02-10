@@ -7,9 +7,7 @@ proxy-groups:
     include-all: true
     filter: "(?i)^(?!.*(自动|手动|选择|Direct|Reject|Fail|Load|Twitch|Netflix)).*"
     proxies:
-      - DIRECT
       - ⚡ 自动选择
-      - REJECT
   - name: ⚡ 自动选择
     type: url-test
     include-all: true   
