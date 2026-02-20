@@ -29,7 +29,7 @@ proxy-groups:
   - name: 链式中转
     type: select
     proxies:
-      - 🇯🇵 YYJP_Neburst
+      - 🇯🇵 YYJP_RFC_JP_CO
       - 🇯🇵 YYJP_Gomami
       - 🇺🇸 YYUS_DMIT_ProWee
   - name: 🇭🇰 香港节点
