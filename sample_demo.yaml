@@ -29,9 +29,8 @@ proxy-groups:
   - name: 链式中转
     type: select
     proxies:
-      - 🇯🇵 YYJP_RFC_JP_CO
-      - 🇯🇵 YYJP_po0
-      - 🇯🇵 YYJP_Gomami
+      - 🇯🇵 YYJP_RFC_JP_CO_ADV
+      - 🇯🇵 YYJP_po0➡️JPT1
       - 🇺🇸 YYUS_DMIT_ProWee
   - name: 🇭🇰 香港节点
     type: select
