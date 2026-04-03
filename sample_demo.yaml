@@ -31,7 +31,7 @@ proxy-groups:
     proxies:
       - 🇯🇵 YYJP_RFC_JP_CO_ADV
       - 🇯🇵 YYJP_po0➡️JPT1
-      - 🇺🇸 YYUS_DMIT_ProWee
+      - 🇭🇰 YYHK_po0->HK
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
@@ -71,7 +71,6 @@ proxy-groups:
     proxies:
       - 🚀 节点选择
       - 🇸🇬 狮城节点
-      - 🇺🇸 YYUS_DMIT_ProWee
       - ⚡ 自动选择
       - DIRECT
       - REJECT
