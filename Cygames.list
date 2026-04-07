@@ -1,0 +1,7 @@
+# Cygames & Granblue Fantasy 规则集
+# 包含游戏域名及相关的 CDN 和分析服务
+
+DOMAIN-SUFFIX,akamaized.net
+DOMAIN,app-analytics-services.com
+DOMAIN-SUFFIX,granbluefantasy.jp
+DOMAIN,gbf.game.mbga.jp
