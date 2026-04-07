@@ -32,6 +32,7 @@ proxy-groups:
       - 🇯🇵 YYJP_RFC_JP_CO_ADV
       - 🇯🇵 YYJP_po0➡️JPT1
       - 🇭🇰 YYHK_po0->HK
+      - 🇭🇰 YYHK_po0->yxvm
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
