@@ -30,6 +30,7 @@ proxy-groups:
     type: select
     proxies:
       - 🇯🇵 YYJP_RFC_JP_CO_ADV
+      - 🇯🇵 Green_Gen2
       - 🇯🇵 YYJP_po0➡️JPT1
       - 🇭🇰 YYHK_po0
       - 🇭🇰 YYHK_po0->yxvm
