@@ -28,12 +28,8 @@ proxy-groups:
       - DIRECT
   - name: 链式中转
     type: select
-    proxies:
-      - 🇯🇵 YYJP_RFC_JP_CO_ADV
-      - 🇯🇵 Green_Gen2
-      - 🇯🇵 YYJP_po0➡️JPT1
-      - 🇭🇰 YYHK_po0
-      - 🇭🇰 YYHK_po0->yxvm
+    include-all: true
+  
   - name: 🇭🇰 香港节点
     type: select
     include-all: true
