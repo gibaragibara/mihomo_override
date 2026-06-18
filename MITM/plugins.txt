@@ -1,0 +1,30 @@
+# Kelee Loon LPX plugins — one URL per line.
+# Lines starting with # are ignored.
+# Edit this file to add/remove plugins, then push to GitHub (or run locally).
+
+https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx
+https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx
+https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx
+https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/XiaoHeiHe_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/PinDuoDuo_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/KuroBBS_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Umetrip_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx
+https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/FleaMarket_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/PuPuMall_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/Baidu_input_method_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
+https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx

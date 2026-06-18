@@ -29,9 +29,32 @@ anywhere://add-rule-set?link=https://raw.githubusercontent.com/gibaragibara/miho
 3. 订阅上面的 `KeleeAds.amrs`
 4. （可选）订阅 `KeleeAds.arrs` 并在 Routing Rules 里设为 REJECT
 
+## 添加 / 删除插件
+
+编辑 `MITM/plugins.txt`（一行一个 LPX 地址）：
+
+```text
+# 删除：直接删掉或注释掉那一行（行首加 #）
+# 添加：从 https://hub.kelee.one 找到插件，复制 Loon 版 .lpx 链接贴到文件末尾
+https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx
+```
+
+推送到 GitHub 后：
+
+1. Actions → **Update Kelee MITM** → Run workflow（立即生效）
+2. 或等到每天自动更新
+
+Anywhere 里已订阅的 `KeleeAds.amrs` 链接不变，刷新/等自动同步即可拿到新规则。
+
+本地先试单个插件：
+
+```bash
+python3 scripts/plugin2amrs.py https://kelee.one/Tool/Loon/Lpx/某插件.lpx
+```
+
 ## 自动更新
 
-GitHub Actions 每天 UTC 04:23 运行 `scripts/plugin2amrs.py --batch --merge-only`：
+GitHub Actions 每天 UTC 04:23 读取 `MITM/plugins.txt`，运行 `scripts/plugin2amrs.py --batch --merge-only`：
 
 - 从 kelee.one 拉取最新 LPX 插件
 - 转换成 Anywhere 格式

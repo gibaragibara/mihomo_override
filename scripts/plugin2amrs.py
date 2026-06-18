@@ -573,34 +573,22 @@ def convert_url(url: str, output_dir: Path) -> Tuple[Optional[Path], Optional[Pa
     return write_split_outputs(source_label, result, output_dir)
 
 
-DEFAULT_PLUGINS = [
-    "https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/XiaoHeiHe_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/PinDuoDuo_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/KuroBBS_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Umetrip_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/FleaMarket_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/PuPuMall_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/Baidu_input_method_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx",
-    "https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx",
-]
+DEFAULT_PLUGINS_FILE = REPO_ROOT / "MITM" / "plugins.txt"
+
+
+def load_default_plugins(path: Path = DEFAULT_PLUGINS_FILE) -> List[str]:
+    if not path.exists():
+        raise FileNotFoundError(f"Plugin list not found: {path}")
+
+    plugins: List[str] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        plugins.append(line)
+    if not plugins:
+        raise ValueError(f"No plugins listed in {path}")
+    return plugins
 
 
 def main() -> int:
@@ -611,7 +599,16 @@ def main() -> int:
         default=str(REPO_ROOT / "MITM"),
         help="Directory for generated .amrs/.arrs files",
     )
-    parser.add_argument("--batch", action="store_true", help="Convert the default Egern plugin set")
+    parser.add_argument(
+        "--batch",
+        action="store_true",
+        help=f"Convert plugins listed in {DEFAULT_PLUGINS_FILE.relative_to(REPO_ROOT)}",
+    )
+    parser.add_argument(
+        "--plugins-file",
+        default=str(DEFAULT_PLUGINS_FILE),
+        help="Plugin list file for --batch (one URL/path per line)",
+    )
     parser.add_argument(
         "--merge",
         action="store_true",
@@ -629,7 +626,7 @@ def main() -> int:
 
     inputs = list(args.inputs)
     if args.batch or not inputs:
-        inputs.extend(DEFAULT_PLUGINS)
+        inputs.extend(load_default_plugins(Path(args.plugins_file)))
 
     merge_only = args.merge_only
     merge_outputs = args.merge or merge_only
