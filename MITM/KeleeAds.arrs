@@ -1,0 +1,464 @@
+name = Kelee Ads (Routing)
+routing = 2
+
+# Auto-merged REJECT rules from Kelee Loon LPX plugins
+# Sources: 26
+#   - https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/RedPaper_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/XiaoHeiHe_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/QiDian_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/PinDuoDuo_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/KuroBBS_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Umetrip_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/JD_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/FleaMarket_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/PuPuMall_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/BaiduNetDisk_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/Baidu_input_method_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
+#   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
+# Rules: 418
+
+# --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
+3, adstrategy
+2, lf-ad-ies.bytecdn.cn
+2, dig.bdurl.net
+2, extlog.snssdk.com
+2, mcs.snssdk.com
+2, bds.snssdk.com
+2, byteadverts.com
+2, ctobsnssdk.com
+2, pangle.io
+3, pangolin
+3, pglstatp
+3, panplayable-toutiao
+3, -ad-sign.byteimg.com
+3, -ad.byteoversea.com
+3, asiad.byteactivity
+3, iflyad.bj.openstorage.cn
+3, bjimp.voiceads.cn
+2, 1rtb.net
+2, 1rtb.com
+2, halomobi.com
+2, hubcloud.com.cn
+2, inmobi.cn
+2, uyunad.com
+2, puata.info
+2, gdfp.gifshow.com
+2, open.e.kuaishou.com
+2, open.e.kuaishou.cn
+2, adtrack.e.kuaishou.com
+2, partner.gifshow.com
+2, adukwai.com
+2, adkwai.com
+2, supersonicads.com
+2, appsad.cn
+2, beizi.biz
+2, ad-scope.com.cn
+2, adn-plus.com.cn
+2, adhub.com.cn
+2, adnplus.com.cn
+2, adscope.com.cn
+2, adscope.cn
+2, adscope.xyz
+2, beizi.info
+2, beizi.online
+2, miaozhen.com
+2, admobile.top
+2, tianmu.mobi
+2, admobile.mobi
+2, admobile.net.cn
+2, popadshop.com
+2, admobile.vip
+2, yksdks.com
+2, dutils.com
+2, mob.com
+2, jiguang.cn
+2, jpush.cn
+2, jpush.io
+2, afd.baidu.com
+2, als.baidu.com
+2, bgg.baidu.com
+2, cpro.baidustatic.com
+2, feed-image.baidu.com
+2, click-bes.baidu.com
+2, eclick.baidu.com
+2, mobads-logs.baidu.com
+2, mobads-pre-config.cdn.bcebos.com
+2, mobads.baidu.com
+2, nadvideo2.baidu.com
+2, wn.pos.baidu.com
+2, miniapp-ad.cdn.bcebos.com
+2, union.baidu.cn
+2, union.baidu.com
+2, adsmind.gdtimg.com
+2, adsmind.ugdtimg.com
+2, ads.privacy.qq.com
+2, huatuocode.huatuo.qq.com
+2, info4.video.qq.com
+2, info6.video.qq.com
+2, ios.bugly.qq.com
+2, pro.bugly.qq.com
+2, ios.video.mpush.qq.com
+2, otheve.beacon.qq.com
+2, pgdt.gtimg.cn
+2, pgdt.ugdtimg.com
+2, qzs.gdtimg.com
+2, qzs.qq.com
+2, rmonitor.qq.com
+2, sdkconfig.video.qq.com
+2, tmead.y.qq.com
+2, tmeadbak.y.qq.com
+2, tmeadcomm.y.qq.com
+2, tpns.qq.com
+2, wup.imtt.qq.com
+2, tpstelemetry.tencent.com
+2, stat.y.qq.com
+2, stat6.y.qq.com
+2, oth.str.mdt.qq.com
+2, h.trace.qq.com
+2, sdk.e.qq.com
+2, tangram.e.qq.com
+3, trace.qq.com
+3, trace.video.qq.com
+3, ad.hunyuan.tencent.com
+2, gdt.qq.com
+2, l.qq.com
+2, imtmp.net
+2, ugdtimg.com
+2, opadlink.com
+2, staevent.work
+2, openinstall.online
+2, statchannel.store
+2, oplinking.com
+2, deepinstall.com
+2, openinstall.com
+2, installtongji.top
+2, openlink.cc
+2, opstatistics.com
+2, installtongji.online
+2, statschannel.xyz
+2, staevent.xyz
+2, opstatistics.cn
+2, openinstall.top
+2, openinstall.io
+2, statsinstall.xyz
+2, statchannel.top
+2, getui.com
+2, getui.net
+2, igexin.com
+2, umtrack.com
+2, umeng.com
+2, umsns.com
+2, lydass.net
+2, lydass.com.cn
+2, lydaas.net
+2, lydass.cn
+2, lydaas.cn
+2, lydaas.com.cn
+2, fwosapp.com
+2, rhinokeen.com
+2, lydaas.com
+2, xixikf.com
+2, wrating.com
+2, mobmore.com
+2, um0.cn
+2, umv0.com
+2, umtrack1.com
+2, eshiqi.com
+2, umv5.com
+2, dratio.com
+2, umtrack0.com
+2, whalecloud.com
+2, umtrack2.com
+2, umengcloud.com
+2, um1.cn
+2, adfunlink.com
+2, ubixioe.com
+2, ossgw.alicdn.com
+2, ems.youku.com
+2, hudong.alicdn.com
+2, et.tanx.com
+2, df.tanx.com
+2, opehs.tanx.com
+2, beacon-api.aliyuncs.com
+2, adash.man.aliyuncs.com
+2, applog.uc.cn
+2, atoken.m.taobao.com
+2, baichuan-sdk.alicdn.com
+2, acs4baichuan.m.taobao.com
+2, api.sm.cn
+2, c.sm.cn
+2, content-understand-strategy.sm.cn
+2, hc-ssp.sm.cn
+2, sdk-log.partner.sm.cn
+2, partner.uc.cn
+2, cpc-service-square.aiclk.com
+2, logrcv.aiclk.com
+2, acjs.aliyun.com
+2, retcode.alicdn.com
+2, arms-retcode.aliyuncs.com
+2, huichuan.sm.cn
+2, huichuan-mc.sm.cn
+2, nex.163.com
+2, iad.g.163.com
+2, gorgon.youdao.com
+2, ad.xiaomi.com
+2, al-log.d.meituan.net
+2, babel-statistics-android.d.meituan.net
+2, maplocatesdksnapshot.d.meituan.net
+2, metrics-picture.d.meituan.net
+2, route-stats.d.meituan.net
+2, dsp-x.jd.com
+2, im-x.jd.com
+2, xlog.jd.com
+2, janapi.jd.com
+2, toponadss.com
+2, toponad.com
+2, motowoo.com
+2, guide2.bianxianmao.com
+2, sdk.zhangyuyidong.cn
+2, sdklog.zhangyuyidong.cn
+2, adintl.cn
+2, adtaipo.com
+2, adx.yixin.im
+2, kuaiyiad.com
+2, adtianmai.com
+2, readgps.com
+2, fanglinad.com
+2, 17admob.com
+2, slyxmobi.com
+2, mobrtb.com
+2, maplehaze.cn
+2, lnk0.com
+2, bridgeoos.com
+2, anythinktech.com
+2, birdgesdk.com
+2, anyrtb.com
+2, combocn.com
+2, beanxin.com
+2, letway.cn
+2, newitai.com
+2, fireluck.cn
+2, setway.cn
+2, artcto.com
+2, wayio.cn
+2, iaddata.com
+2, ad-evods.tianya.tv
+2, tuia.cn
+2, 66mobi.com
+2, xdplt.com
+2, ads.cup.com.cn
+2, adjust.com
+2, adjust.net.in
+2, app-analytics-services.com
+2, odm.app-ads-services.com
+2, firebaselogging-pa.googleapis.com
+2, firebaseinappmessaging.googleapis.com
+2, fundingchoicesmessages.google.com
+2, doubleclick.net
+2, doubleclick-cn.net
+2, googlesyndication-cn.com
+2, xinduoad.com
+2, statis.miwuad.com
+2, sigmob.cn
+2, richmob.cn
+2, ad.shunchangzhixing.com
+2, redirect.shunchangzhixing.com
+2, api.touch-moblie.com
+2, mercury-gateway.ixiaochuan.cn
+2, adapi.izuiyou.com
+2, domob.cn
+2, adwangmai.com
+2, bxsnews.com
+2, ranfenghd.com
+2, qchannel01.cn
+2, ad.xelements.cn
+2, adsrvr.cn
+2, adsrvr.org
+2, fancydsp.com
+2, xcultur.com
+2, bayescom.com
+2, etoolads.cn
+2, ad.aggrxinc.com
+2, mentamob.com
+2, advlion.com
+2, shanghailingye.cn
+2, shenshiads.com
+2, adshenshi.com
+2, qidianad.com
+2, kuaichuanad.com
+2, statisticslinks.com
+2, tradplusad.com
+2, fancyapi.com
+2, medproad.com
+2, applovin.com
+2, iads.unity3d.com
+2, unityads.unitychina.cn
+2, tapjoy.com
+2, ads.vungle.com
+2, adsmoloco.com
+2, smadex.com
+2, tapad.com
+2, adsappier.com
+2, inmobi.com
+2, inmobicdn.net
+2, appsflyersdk.com
+2, applvn.com
+2, moloco.com
+2, rayjump.com
+2, rixengine.com
+2, amazon-adsystem.com
+2, skarb.club
+2, skarb.work
+2, amplitude.com
+# --- HTTPDNS拦截器 (https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx) ---
+3, httpdns
+3, httpsdns
+2, yyapp-httpdns.gslb.yy.com
+2, union-httpdns.gslb.yy.com
+2, yuyin-httpdns.gslb.yy.com
+2, httpdns-v6.gslb.yy.com
+2, dns2.q2cdn.com
+2, dns.weixin.qq.com
+2, dns.weixin.qq.com.cn
+2, aedns.weixin.qq.com
+2, httpdns.kg.qq.com
+2, httpdns.bilivideo.com
+2, httpdns.browser.miui.com
+2, resolver.msg.xiaomi.net
+2, httpdns.alicdn.com
+2, httpdns-api.aliyuncs.com
+2, httpdns-sc.aliyuncs.com
+2, amdc.alipay.com
+2, ucdc.upaas.quark.cn
+2, httpdns.danuoyi.tbcache.com
+2, httpdns.cctv.com
+2, httpdns-browser.platform.dbankcloud.cn
+2, httpdns.huaweicloud.com
+2, httpdns.c.cdnhwc2.com
+2, httpdns.platform.dbankcloud.cn
+2, httpdns.platform.dbankcloud.com
+2, httpdns1.cc.cdnhwc5.com
+2, doh.ptqy.gitv.tv
+2, httpdns.baidu.com
+2, httpsdns.baidu.com
+2, httpdns.bcelive.com
+2, httpdns.baidubce.com
+2, dns.iqiyi.com
+2, doh.iqiyi.com
+2, dns.qiyipic.iqiyi.com
+2, httpdns.n.shifen.com
+2, httpdns.ocloud.heytapmobi.com
+2, httpdns.push.heytapmobi.com
+2, dns.jd.com
+2, dotserver.douyucdn.cn
+2, hdns.ksyun.com
+2, httpdns.push.oppomobile.com
+2, httpdns.ocloud.oppomobile.com
+2, cdndns.kwd.inkuai.com
+2, hdns.k-dyn.com
+2, kuaishou.httpdns.pro
+2, httpdns.kwd.inkuai.com
+2, apidns.kwd.inkuai.com
+2, apidns-js.kwd.inkuai.com
+2, httpdns.meituan.com
+2, httpdnsmultiapi.meituan.com
+2, httpdnsmultiapivip.meituan.com
+2, httpdns.music.163.com
+2, httpdns.n.netease.com
+2, httpdns-sdk.n.netease.com
+2, httpdns.yunxindns.com
+2, lofter.httpdns.c.163.com
+2, music.httpdns.c.163.com
+2, httpdns.zybang.com
+2, httpdns.calorietech.com
+2, dns.weibo.cn
+2, hd.xiaojukeji.com
+2, serveraddr.service.kugou.com
+2, twns.p2ptun.qq.com
+2, tp2p.kg.qq.com
+2, httpdns.immomo.com
+# --- 可莉广告过滤器 (https://kelee.one/Tool/Loon/Lpx/Remove_ads_by_keli.lpx) ---
+2, acdn.adnxs.com
+2, mediation.adnxs.com
+2, sin3-ib.adnxs.com
+2, sdkconfig.ad.xiaomi.com
+2, data.mistat.xiaomi.com
+2, tracking.intl.miui.com
+2, business.msstatic.com
+2, v1d.szbdyd.com
+2, m1.ad.10010.com
+2, ad.21cn.com
+2, ad.k.21cn.com
+2, admarket.21cn.com
+2, adshows.21cn.com
+2, mall-dsp2.qinlinkeji.com
+2, mallapi2.qinlinkeji.com
+2, open-pixon.ads-pixiv.net
+# --- 哔哩哔哩去广告 (https://kelee.one/Tool/Loon/Lpx/Bilibili_remove_ads.lpx) ---
+2, api.biliapi.com
+2, app.biliapi.com
+2, api.biliapi.net
+2, app.biliapi.net
+# --- 拼多多去广告 (https://kelee.one/Tool/Loon/Lpx/PinDuoDuo_remove_ads.lpx) ---
+2, titan.pinduoduo.com
+2, xg.pinduoduo.com
+2, cdl-1.pddpic.com
+2, cdl-p2.pddpic.com
+2, cd-1.pddpic.com
+2, apm.pinduoduo.com
+2, th-b.pinduoduo.com
+2, ta.pinduoduo.com
+2, th.pinduoduo.com
+2, th-a.pinduoduo.com
+2, ta-a.pinduoduo.com
+2, meta.pinduoduo.com
+2, apm-a.pinduoduo.com
+# --- 微信公众号去广告 (https://kelee.one/Tool/Loon/Lpx/Weixin_Official_Accounts_remove_ads.lpx) ---
+2, wxs.qq.com
+# --- 微信小程序去广告 (https://kelee.one/Tool/Loon/Lpx/WexinMiniPrograms_Remove_ads.lpx) ---
+2, wxsnsdy.wxs.qq.com
+2, wxsmsdy.video.qq.com
+2, wxsnsdythumb.wxs.qq.com
+2, ads-shopping.shouqianba.com
+2, ad.maoyan.com
+2, e.jparking.cn
+# --- 什么值得买去广告 (https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx) ---
+2, adx-api.zdmimg.com
+# --- 高德地图去广告 (https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx) ---
+2, amap-aos-info-nogw.amap.com
+2, free-aos-cdn-image.amap.com
+2, v.smtcdns.com
+# --- 斗鱼去广告 (https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx) ---
+2, stun1.douyucdn.cn
+2, stun1.qvb.qcloud.com
+# --- 彩云天气去广告 (https://kelee.one/Tool/Loon/Lpx/ColorfulClouds_remove_ads.lpx) ---
+2, abyss.cyapi.cn
+2, ad.cyapi.cn
+2, gather.colorfulclouds.net
+# --- 爱奇艺去广告 (https://kelee.one/Tool/Loon/Lpx/iQiYi_Video_remove_ads.lpx) ---
+2, api.iqiyi.com
+2, access.if.iqiyi.com
+# --- QQ音乐去广告 (https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx) ---
+2, adstats.tencentmusic.com
+2, ad.tencentmusic.com
+2, adcdn.tencentmusic.com
+2, adcdn6.tencentmusic.com
+2, adexpo.tencentmusic.com
+2, adclick.tencentmusic.com
+2, mc.tencentmusic.com
+2, monitor.music.qq.com
+2, tmeadquic.y.qq.com
