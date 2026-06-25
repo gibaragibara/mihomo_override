@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 418
+# Rules: 423
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -270,6 +270,7 @@ routing = 2
 2, fundingchoicesmessages.google.com
 2, doubleclick.net
 2, doubleclick-cn.net
+2, googlesyndication.com
 2, googlesyndication-cn.com
 2, xinduoad.com
 2, statis.miwuad.com
@@ -306,9 +307,10 @@ routing = 2
 2, medproad.com
 2, applovin.com
 2, iads.unity3d.com
+2, unityads.unity3d.com
 2, unityads.unitychina.cn
 2, tapjoy.com
-2, ads.vungle.com
+2, vungle.com
 2, adsmoloco.com
 2, smadex.com
 2, tapad.com
@@ -324,6 +326,9 @@ routing = 2
 2, skarb.club
 2, skarb.work
 2, amplitude.com
+2, fivecdm.com
+2, doubleverify.com
+2, ep7.facebook.com
 # --- HTTPDNS拦截器 (https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx) ---
 3, httpdns
 3, httpsdns
