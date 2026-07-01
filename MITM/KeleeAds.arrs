@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 423
+# Rules: 433
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -51,6 +51,7 @@ routing = 2
 3, bjimp.voiceads.cn
 2, 1rtb.net
 2, 1rtb.com
+2, yfanads.com
 2, halomobi.com
 2, hubcloud.com.cn
 2, inmobi.cn
@@ -101,8 +102,13 @@ routing = 2
 2, nadvideo2.baidu.com
 2, wn.pos.baidu.com
 2, miniapp-ad.cdn.bcebos.com
+2, hm.baidu.com
+2, api.map.baidu.com
+2, dlswbr.baidu.com
+2, miao.baidu.com
 2, union.baidu.cn
 2, union.baidu.com
+2, tdid.m.qq.com
 2, adsmind.gdtimg.com
 2, adsmind.ugdtimg.com
 2, ads.privacy.qq.com
@@ -210,6 +216,7 @@ routing = 2
 2, acjs.aliyun.com
 2, retcode.alicdn.com
 2, arms-retcode.aliyuncs.com
+2, iytcdn.com
 2, huichuan.sm.cn
 2, huichuan-mc.sm.cn
 2, nex.163.com
@@ -302,6 +309,7 @@ routing = 2
 2, qidianad.com
 2, kuaichuanad.com
 2, statisticslinks.com
+2, adx.zuoyebang.com
 2, tradplusad.com
 2, fancyapi.com
 2, medproad.com
@@ -328,6 +336,8 @@ routing = 2
 2, amplitude.com
 2, fivecdm.com
 2, doubleverify.com
+2, tobidad.cn
+2, tobidad.com
 2, ep7.facebook.com
 # --- HTTPDNS拦截器 (https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx) ---
 3, httpdns
