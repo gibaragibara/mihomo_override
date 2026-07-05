@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 440
+# Rules: 441
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -232,7 +232,6 @@ routing = 2
 2, im-x.jd.com
 2, xlog.jd.com
 2, janapi.jd.com
-2, dg.k.jd.com
 2, toponadss.com
 2, toponad.com
 2, motowoo.com
@@ -317,6 +316,8 @@ routing = 2
 2, adx.52qumao.com
 2, hzjizhun.cn
 2, hzjizhun.com
+2, sogaha.cn
+2, zxid-m.mobileservice.cn
 2, tradplusad.com
 2, fancyapi.com
 2, medproad.com
