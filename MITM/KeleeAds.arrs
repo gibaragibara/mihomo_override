@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 441
+# Rules: 442
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -205,6 +205,7 @@ routing = 2
 2, atoken.m.taobao.com
 2, baichuan-sdk.alicdn.com
 2, acs4baichuan.m.taobao.com
+2, nbsdk-baichuan.alicdn.com
 2, api.sm.cn
 2, c.sm.cn
 2, content-understand-strategy.sm.cn
