@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 442
+# Rules: 441
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -103,7 +103,6 @@ routing = 2
 2, wn.pos.baidu.com
 2, miniapp-ad.cdn.bcebos.com
 2, hm.baidu.com
-2, api.map.baidu.com
 2, dlswbr.baidu.com
 2, miao.baidu.com
 2, union.baidu.cn
