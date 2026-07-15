@@ -1,56 +1,52 @@
 /*
- * po0 防火墙自动加白 · Egern 原生脚本
+ * po0 防火墙自动加白 · Egern
  *
- * Egern 的脚本运行模型与 Surge 系不同：入口是 `export default async function(ctx)`，
- * 且没有 $httpClient/$persistentStore/$notification/$done 等全局，只能用 ctx.* API。
- * 因此 Egern 不复用共享脚本 scripts/po0-firewall-whitelist.js，而是本独立文件。
- * 两者业务逻辑保持一致——改动加白/槽位/通知策略时请同步修改两份。
+ * - schedule / network：静默加白，仅状态变化时 notify
+ * - generic / widget：返回与「服务器监控」同风格的小组件 DSL
  *
- * 行为：POST https://124.221.69.228/api/firewall/<token>/add[?slot=N]，把本机当前
- *   出口 IP 加白。token 走 URL 路径；服务端对已在白名单的 IP 幂等；写满 5 个后按
- *   写入时间 FIFO 淘汰（带 slot 的行永不淘汰）。
- *
- * 模块参数（Egern env_schema → ctx.env，UI 里直接填）：
- *   - tokens：pgnfw_…，多台机器用逗号分割；单条也可写 pgnfw_xxx@N
- *   - slot：  全局默认坑位索引，从 0 起算（0=第1坑，1=第2坑，2=第3坑）；
- *            留空则不固定。token 自带 @N 时优先
- *
- * 加白粒度为 C 段（/24）：服务端把 whitelist 条目和 currentIp 归一化成
- *   x.x.x.0/24 回显，同段换 IP 不产生新写入；匹配用 sameC24() 兼容混杂格式。
+ * env_schema → ctx.env:
+ *   tokens  pgnfw_…（可逗号多台；单条可 pgnfw_xxx@N）
+ *   slot    坑位索引，从 0 起算（0=第1坑，2=第3坑）；空=不固定
  */
 
-const API_BASE = "https://124.221.69.228/api/firewall/"; // + <token> + "/add"
+const API_BASE = "https://124.221.69.228/api/firewall/";
 const STORE_PREFIX = "po0_fw_";
-const HIST_WINDOW_MS = 24 * 3600 * 1000; // 📶 标记的记账窗口
+const HIST_WINDOW_MS = 24 * 3600 * 1000;
 
-// 解析全局 slot 参数："" / 空白 → null；"2" → 2（0 起算，2 = 第 3 坑）
+const C = {
+  bg1: "#1C1C1E",
+  bg2: "#2C2C2E",
+  text: "#FFFFFF",
+  muted: "#8E8E93",
+  dim: "#636366",
+  ok: "#30D158",
+  bad: "#FF453A",
+  warn: "#FFD60A",
+  accent: "#0A84FF",
+  pin: "#64D2FF",
+};
+
 function parseGlobalSlot(raw) {
   if (raw === null || raw === undefined) return null;
   const s = String(raw).trim();
-  if (s === "") return null;
+  if (!s) return null;
   const n = parseInt(s, 10);
-  return isNaN(n) ? null : n;
+  return Number.isNaN(n) ? null : n;
 }
 
-// tokens 分隔符兼容 , | ; 、 空白；每段可带 @槽位 后缀（优先于全局 slot）
 function parseTokens(raw, defaultSlot) {
   return String(raw || "")
     .split(/[,|;、\s]+/)
-    .map(function (s) {
-      return s.trim();
-    })
-    .filter(function (s) {
-      return s.indexOf("pgnfw_") === 0;
-    })
-    .map(function (s) {
+    .map((s) => s.trim())
+    .filter((s) => s.indexOf("pgnfw_") === 0)
+    .map((s) => {
       const at = s.indexOf("@");
       if (at === -1) return { token: s, slot: defaultSlot };
       const n = parseInt(s.slice(at + 1), 10);
-      return { token: s.slice(0, at), slot: isNaN(n) ? defaultSlot : n };
+      return { token: s.slice(0, at), slot: Number.isNaN(n) ? defaultSlot : n };
     });
 }
 
-// WiFi 有 ssid 视为非蜂窝；否则若有蜂窝载波/制式则视为蜂窝（仅用于 📶 标记）
 function onCellular(ctx) {
   try {
     const d = ctx.device || {};
@@ -71,9 +67,24 @@ function readHistory(ctx, key) {
   }
   if (!Array.isArray(h)) h = [];
   const cutoff = Date.now() - HIST_WINDOW_MS;
-  return h.filter(function (e) {
-    return e && e.ts > cutoff;
-  });
+  return h.filter((e) => e && e.ts > cutoff);
+}
+
+function sameC24(a, b) {
+  if (!a || !b) return false;
+  a = String(a);
+  b = String(b);
+  if (a === b) return true;
+  if (a.slice(-3) !== "/24" && b.slice(-3) !== "/24") return false;
+  const pa = a.replace("/24", "").split(".");
+  const pb = b.replace("/24", "").split(".");
+  return (
+    pa.length === 4 &&
+    pb.length === 4 &&
+    pa[0] === pb[0] &&
+    pa[1] === pb[1] &&
+    pa[2] === pb[2]
+  );
 }
 
 async function apiCall(ctx, token, slot) {
@@ -99,47 +110,27 @@ async function apiCall(ctx, token, slot) {
   try {
     data = JSON.parse(text);
   } catch (e) {}
-  // 带槽位写入且本机 IP 已占用别的槽位 → 服务端 403 冲突，需去 UI 删旧槽位
   if (resp.status === 403) {
     return {
-      error: "槽位冲突：本机 IP 已在其它槽位，请先去 UI 删除",
+      error: "槽位冲突：本机 IP 已在其它槽位",
       conflict: true,
       currentIp: data && data.currentIp,
     };
   }
   if (!data) return { error: "响应异常: " + String(text).slice(0, 80) };
-  // 服务端按 C 段（/24）加白，whitelist 与 currentIp 都可能是 x.x.x.0/24
-  // whitelist 元素为 {ip, slot} 对象：记下 ip→slot 再摊平成 IP 数组
+
   const raw = Array.isArray(data.whitelist) ? data.whitelist : [];
   data.slotOf = {};
-  raw.forEach(function (e) {
+  raw.forEach((e) => {
     if (e && typeof e === "object" && e.slot !== null && e.slot !== undefined) {
       data.slotOf[e.ip] = e.slot;
     }
   });
-  data.whitelist = raw.map(function (e) {
-    return e && typeof e === "object" ? e.ip : e;
-  });
+  data.whitelist = raw.map((e) => (e && typeof e === "object" ? e.ip : e));
   data.applied =
     data.enabled === true &&
-    data.whitelist.some(function (ip) {
-      return sameC24(ip, data.currentIp);
-    });
+    data.whitelist.some((ip) => sameC24(ip, data.currentIp));
   return data;
-}
-
-// 任一侧为 /24 段时按前三段比较，两侧均为精确 IP 时要求全等
-function sameC24(a, b) {
-  if (!a || !b) return false;
-  a = String(a);
-  b = String(b);
-  if (a === b) return true;
-  if (a.slice(-3) !== "/24" && b.slice(-3) !== "/24") return false;
-  const pa = a.replace("/24", "").split(".");
-  const pb = b.replace("/24", "").split(".");
-  return (
-    pa.length === 4 && pb.length === 4 && pa[0] === pb[0] && pa[1] === pb[1] && pa[2] === pb[2]
-  );
 }
 
 async function ensure(ctx, item, index, cellular) {
@@ -154,26 +145,26 @@ async function ensure(ctx, item, index, cellular) {
       ctx.storage.setJSON(kvHist, hist.slice(-10));
     }
   }
-  return { kvState: kvState, kvHist: kvHist, slot: item.slot, st: st };
+  return { kvState, kvHist, slot: item.slot, st };
 }
 
-// 每 token 一行：不含 token，只含白名单/坑位信息；钉住的槽位标 📌，蜂窝加的 IP 标 📶
-function describe(ctx, index, c) {
+function describeNotify(ctx, index, c) {
   const st = c.st;
   const pin = c.slot !== null && c.slot !== undefined && c.slot !== "" ? " 📌" + c.slot : "";
   const head = "#" + (index + 1) + pin + " ";
   if (st.error) return head + "❌ " + st.error;
   if (st.enabled === false) return head + "⚠️ 防火墙未启用";
-  if (!st.applied) return head + "❌ 加白未生效 " + ((st.whitelist && st.whitelist.length) || 0) + "/" + st.limit;
-
+  if (!st.applied) {
+    return head + "❌ 加白未生效 " + ((st.whitelist && st.whitelist.length) || 0) + "/" + st.limit;
+  }
   const hist = readHistory(ctx, c.kvHist);
   const cellIps = {};
-  hist.forEach(function (e) {
+  hist.forEach((e) => {
     if (e.src === "cell") cellIps[e.ip] = true;
   });
   const slotOf = st.slotOf || {};
   const ips = st.whitelist
-    .map(function (ip) {
+    .map((ip) => {
       const slotTag = slotOf[ip] !== undefined ? " 📌" + slotOf[ip] : "";
       return ip + slotTag + (cellIps[ip] ? " 📶" : "") + (sameC24(ip, st.currentIp) ? " ←" : "");
     })
@@ -181,99 +172,428 @@ function describe(ctx, index, c) {
   return head + "✅ " + st.whitelist.length + "/" + st.limit + "\n    " + ips;
 }
 
-// 构建类似 Surge 面板的内容行（字符串，供通知用）
-function describeLines(ctx, index, c) {
-  const st = c.st;
-  const pin = c.slot !== null && c.slot !== undefined && c.slot !== "" ? " #" + c.slot : "";
-  const head = "#" + (index + 1) + pin + " ";
-  if (st.error) return [head + "X " + st.error];
-  if (st.enabled === false) return [head + "! 防火墙未启用"];
-  if (!st.applied) {
-    return [head + "X 加白未生效 " + ((st.whitelist && st.whitelist.length) || 0) + "/" + st.limit];
-  }
+/** 汇总 UI 数据 */
+function buildView(ctx, results, cellular) {
+  let okCount = 0;
+  let exitIp = "?";
+  const machines = [];
 
-  const hist = readHistory(ctx, c.kvHist);
-  const cellIps = {};
-  hist.forEach(function (e) {
-    if (e.src === "cell") cellIps[e.ip] = true;
-  });
-  const slotOf = st.slotOf || {};
-  const lines = [head + "OK " + st.whitelist.length + "/" + st.limit];
-  st.whitelist.forEach(function (ip) {
-    const slotTag = slotOf[ip] !== undefined ? " #" + slotOf[ip] : "";
-    const cell = cellIps[ip] ? " cell" : "";
-    const cur = sameC24(ip, st.currentIp) ? " <-" : "";
-    lines.push("  " + ip + slotTag + cell + cur);
-  });
-  return lines;
-}
+  results.forEach((c, i) => {
+    const st = c.st;
+    if (st.applied) okCount++;
+    if (st.currentIp) exitIp = st.currentIp;
 
-// Egern 小组件 DSL：分行渲染，效果接近 Surge 面板
-function asWidget(title, lines, ok) {
-  const C = {
-    bg: "#1C1C1E",
-    text: "#FFFFFF",
-    muted: "#8E8E93",
-    ok: "#34C759",
-    bad: "#FF3B30",
-    accent: "#0A84FF",
-  };
-  const statusColor = ok ? C.ok : C.bad;
-  const lineNodes = (lines || []).map(function (line) {
-    const isHead = /^#\d/.test(line.trim());
-    return {
-      type: "text",
-      text: line,
-      font: {
-        size: isHead ? "caption1" : 11,
-        weight: isHead ? "semibold" : "regular",
-        family: "Menlo",
-      },
-      textColor: isHead ? C.text : C.muted,
-      maxLines: 2,
-      minScale: 0.7,
-    };
-  });
+    const hist = readHistory(ctx, c.kvHist);
+    const cellIps = {};
+    hist.forEach((e) => {
+      if (e.src === "cell") cellIps[e.ip] = true;
+    });
 
-  const refreshAfter = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    let status = "ok";
+    let statusText = "OK";
+    if (st.error) {
+      status = "bad";
+      statusText = st.error;
+    } else if (st.enabled === false) {
+      status = "warn";
+      statusText = "防火墙未启用";
+    } else if (!st.applied) {
+      status = "bad";
+      statusText = "加白未生效";
+    }
+
+    const entries = [];
+    if (Array.isArray(st.whitelist)) {
+      st.whitelist.forEach((ip) => {
+        entries.push({
+          ip,
+          slot: st.slotOf && st.slotOf[ip] !== undefined ? st.slotOf[ip] : null,
+          cell: !!cellIps[ip],
+          current: sameC24(ip, st.currentIp),
+        });
+      });
+    }
+
+    machines.push({
+      index: i + 1,
+      pinSlot: c.slot,
+      status,
+      statusText,
+      used: (st.whitelist && st.whitelist.length) || 0,
+      limit: st.limit != null ? st.limit : "?",
+      entries,
+      error: st.error || null,
+    });
+  });
 
   return {
+    ok: okCount === results.length && okCount > 0,
+    okCount,
+    total: results.length,
+    exitIp,
+    cellular,
+    machines,
+  };
+}
+
+function divider() {
+  return {
+    type: "stack",
+    direction: "row",
+    height: 1,
+    backgroundColor: "#3A3A3C",
+    children: [{ type: "spacer" }],
+  };
+}
+
+function textNode(text, opts = {}) {
+  const font = {
+    size: opts.size || "caption1",
+    weight: opts.weight || "medium",
+  };
+  if (opts.mono) font.family = "Menlo";
+  return {
+    type: "text",
+    text: String(text),
+    font,
+    textColor: opts.color || C.text,
+    maxLines: opts.maxLines || 2,
+    minScale: opts.minScale || 0.75,
+  };
+}
+
+function row(children, gap = 4) {
+  return {
+    type: "stack",
+    direction: "row",
+    alignItems: "center",
+    gap,
+    children,
+  };
+}
+
+function col(children, gap = 3) {
+  return {
+    type: "stack",
+    direction: "column",
+    gap,
+    children,
+  };
+}
+
+function statusColor(status) {
+  if (status === "ok") return C.ok;
+  if (status === "warn") return C.warn;
+  return C.bad;
+}
+
+function header(v) {
+  const color = v.ok ? C.ok : C.bad;
+  return row(
+    [
+      {
+        type: "image",
+        src: v.ok ? "sf-symbol:checkmark.shield.fill" : "sf-symbol:exclamationmark.shield.fill",
+        width: 14,
+        height: 14,
+        color,
+      },
+      textNode(`po0 加白 ${v.okCount}/${v.total}`, {
+        size: "subheadline",
+        weight: "bold",
+        color: C.text,
+        maxLines: 1,
+      }),
+      { type: "spacer" },
+      textNode(v.cellular ? "蜂窝" : "出口", {
+        size: "caption2",
+        color: C.dim,
+        maxLines: 1,
+      }),
+    ],
+    6
+  );
+}
+
+function exitRow(v) {
+  return row(
+    [
+      {
+        type: "image",
+        src: "sf-symbol:network",
+        width: 12,
+        height: 12,
+        color: C.accent,
+      },
+      textNode(String(v.exitIp), {
+        size: "caption1",
+        weight: "semibold",
+        mono: true,
+        color: C.accent,
+        maxLines: 1,
+      }),
+      { type: "spacer" },
+      textNode(v.ok ? "已加白" : "异常", {
+        size: "caption2",
+        weight: "bold",
+        color: v.ok ? C.ok : C.bad,
+        maxLines: 1,
+      }),
+    ],
+    6
+  );
+}
+
+function machineBlock(m, compact) {
+  const color = statusColor(m.status);
+  const pin =
+    m.pinSlot !== null && m.pinSlot !== undefined && m.pinSlot !== ""
+      ? ` 钉#${m.pinSlot}`
+      : "";
+  const head = `#${m.index}${pin}  ${m.used}/${m.limit}  ${m.statusText}`;
+
+  const lines = [
+    row(
+      [
+        {
+          type: "image",
+          src:
+            m.status === "ok"
+              ? "sf-symbol:checkmark.circle.fill"
+              : m.status === "warn"
+                ? "sf-symbol:exclamationmark.triangle.fill"
+                : "sf-symbol:xmark.circle.fill",
+          width: 12,
+          height: 12,
+          color,
+        },
+        textNode(head, {
+          size: "caption1",
+          weight: "semibold",
+          color: C.text,
+          maxLines: 1,
+        }),
+      ],
+      4
+    ),
+  ];
+
+  if (m.entries && m.entries.length) {
+    const show = compact ? m.entries.slice(0, 3) : m.entries;
+    show.forEach((e) => {
+      const tags = [];
+      if (e.slot !== null && e.slot !== undefined) tags.push(`#${e.slot}`);
+      if (e.cell) tags.push("cell");
+      if (e.current) tags.push("<-");
+      const suffix = tags.length ? "  " + tags.join(" ") : "";
+      lines.push(
+        textNode(`  ${e.ip}${suffix}`, {
+          size: 11,
+          mono: true,
+          color: e.current ? C.pin : C.muted,
+          maxLines: 1,
+        })
+      );
+    });
+    if (compact && m.entries.length > 3) {
+      lines.push(
+        textNode(`  +${m.entries.length - 3} more`, {
+          size: 10,
+          color: C.dim,
+          maxLines: 1,
+        })
+      );
+    }
+  } else if (m.error) {
+    lines.push(
+      textNode(`  ${m.error}`, {
+        size: 11,
+        color: C.bad,
+        maxLines: 2,
+      })
+    );
+  }
+
+  return col(lines, 2);
+}
+
+function emptyWidget(message) {
+  return {
     type: "widget",
-    backgroundColor: C.bg,
-    padding: [12, 14],
-    gap: 4,
-    refreshAfter: refreshAfter,
+    backgroundColor: C.bg1,
+    padding: 14,
+    gap: 8,
     children: [
+      row(
+        [
+          {
+            type: "image",
+            src: "sf-symbol:exclamationmark.shield.fill",
+            width: 16,
+            height: 16,
+            color: C.bad,
+          },
+          textNode("po0 防火墙加白", {
+            size: "headline",
+            weight: "bold",
+            color: C.text,
+          }),
+        ],
+        6
+      ),
+      textNode(message, {
+        size: "caption1",
+        color: C.muted,
+        maxLines: 4,
+      }),
+    ],
+  };
+}
+
+function renderWidget(v, family) {
+  const refreshAfter = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+  // 锁屏内联
+  if (family === "accessoryInline") {
+    return {
+      type: "widget",
+      children: [
+        textNode(
+          v.ok ? `po0 ${v.okCount}/${v.total} ${v.exitIp}` : `po0 异常`,
+          { size: "caption1", weight: "semibold", mono: true, maxLines: 1 }
+        ),
+      ],
+    };
+  }
+
+  // 锁屏圆形
+  if (family === "accessoryCircular") {
+    return {
+      type: "widget",
+      padding: 4,
+      children: [
+        col(
+          [
+            {
+              type: "image",
+              src: v.ok
+                ? "sf-symbol:checkmark.shield.fill"
+                : "sf-symbol:exclamationmark.shield.fill",
+              width: 18,
+              height: 18,
+              color: v.ok ? C.ok : C.bad,
+            },
+            textNode(`${v.okCount}/${v.total}`, {
+              size: "caption2",
+              weight: "bold",
+              mono: true,
+              color: C.text,
+              maxLines: 1,
+            }),
+          ],
+          2
+        ),
+      ],
+    };
+  }
+
+  // 锁屏矩形
+  if (family === "accessoryRectangular") {
+    return {
+      type: "widget",
+      gap: 2,
+      children: [
+        textNode(`po0 ${v.okCount}/${v.total}`, {
+          size: "headline",
+          weight: "bold",
+          maxLines: 1,
+        }),
+        textNode(String(v.exitIp), {
+          size: 11,
+          mono: true,
+          color: C.muted,
+          maxLines: 1,
+        }),
+        textNode(v.ok ? "已加白" : "异常", {
+          size: "caption2",
+          color: v.ok ? C.ok : C.bad,
+          maxLines: 1,
+        }),
+      ],
+    };
+  }
+
+  // 小尺寸
+  if (family === "systemSmall") {
+    const m0 = v.machines[0];
+    return {
+      type: "widget",
+      backgroundColor: C.bg1,
+      padding: 12,
+      gap: 6,
+      refreshAfter,
+      children: [
+        header(v),
+        divider(),
+        textNode(String(v.exitIp), {
+          size: "caption1",
+          weight: "bold",
+          mono: true,
+          color: C.accent,
+          maxLines: 1,
+        }),
+        textNode(
+          m0
+            ? `#${m0.index} ${m0.used}/${m0.limit} ${m0.statusText}`
+            : "-",
+          {
+            size: 11,
+            mono: true,
+            color: C.muted,
+            maxLines: 2,
+          }
+        ),
+      ],
+    };
+  }
+
+  // 中尺寸（对齐服务器监控 systemMedium）
+  if (family === "systemMedium") {
+    const blocks = v.machines.map((m) => machineBlock(m, true));
+    return {
+      type: "widget",
+      backgroundColor: C.bg1,
+      padding: [10, 14],
+      gap: 6,
+      refreshAfter,
+      children: [header(v), exitRow(v), divider(), ...blocks],
+    };
+  }
+
+  // 大尺寸 / 默认（对齐服务器监控 large）
+  const blocks = v.machines.map((m) => machineBlock(m, false));
+  return {
+    type: "widget",
+    backgroundColor: C.bg1,
+    padding: [12, 14],
+    gap: 6,
+    refreshAfter,
+    children: [
+      header(v),
+      exitRow(v),
+      divider(),
+      ...blocks,
       {
         type: "stack",
         direction: "row",
-        alignItems: "center",
-        gap: 6,
         children: [
-          {
-            type: "image",
-            src: ok ? "sf-symbol:checkmark.shield.fill" : "sf-symbol:exclamationmark.shield.fill",
-            width: 16,
-            height: 16,
-            color: statusColor,
-          },
-          {
-            type: "text",
-            text: title,
-            font: { size: "subheadline", weight: "bold" },
-            textColor: C.text,
-            maxLines: 2,
-            minScale: 0.7,
-          },
+          { type: "spacer" },
+          textNode("每 10 分钟 / 切网自动加白", {
+            size: "caption2",
+            color: C.dim,
+            maxLines: 1,
+          }),
         ],
-      },
-      {
-        type: "stack",
-        direction: "column",
-        gap: 2,
-        children: lineNodes.length
-          ? lineNodes
-          : [{ type: "text", text: "(无数据)", font: { size: "caption1" }, textColor: C.muted }],
       },
     ],
   };
@@ -281,18 +601,21 @@ function asWidget(title, lines, ok) {
 
 export default async function (ctx) {
   const env = ctx.env || {};
-  // env_schema 字段 tokens / slot（也兼容 token 单数别名）
   const defaultSlot = parseGlobalSlot(env.slot);
   const tokens = parseTokens(env.tokens || env.token, defaultSlot);
+  const isWidget = !!ctx.widgetFamily;
+
   if (tokens.length === 0) {
-    const body =
-      "在模块参数中填写 Token（pgnfw_…）；可选填写坑位（从 0 起算：0=第1坑，2=第3坑）";
-    ctx.notify({
-      title: "po0 防火墙加白",
-      subtitle: "未配置 token",
-      body: body,
-    });
-    return asWidget("po0 加白：未配置 token", [body], false);
+    const msg = "请在模块参数填写 Token；可选填写坑位（0=第1坑，2=第3坑）";
+    if (!isWidget) {
+      ctx.notify({
+        title: "po0 防火墙加白",
+        subtitle: "未配置 token",
+        body: msg,
+      });
+      return;
+    }
+    return emptyWidget(msg);
   }
 
   const cellular = onCellular(ctx);
@@ -301,21 +624,11 @@ export default async function (ctx) {
     results.push(await ensure(ctx, tokens[i], i, cellular));
   }
 
-  let okCount = 0;
-  let exitIp = "?";
   let changed = false;
-  const lines = [];
   const notifyLines = [];
   for (let i = 0; i < results.length; i++) {
     const st = results[i].st;
-    if (st.applied) okCount++;
-    if (st.currentIp) exitIp = st.currentIp;
-    // 通知仍用带 emoji 的 describe；小组件用纯 ASCII 分行，避免渲染失败
-    notifyLines.push(describe(ctx, i, results[i]));
-    describeLines(ctx, i, results[i]).forEach(function (l) {
-      lines.push(l);
-    });
-
+    notifyLines.push(describeNotify(ctx, i, results[i]));
     const state = (st.currentIp || "?") + "|" + (st.applied ? "1" : "0");
     if (ctx.storage.get(results[i].kvState) !== state) {
       ctx.storage.set(results[i].kvState, state);
@@ -323,12 +636,25 @@ export default async function (ctx) {
     }
   }
 
-  const title =
-    "po0 加白 " + okCount + "/" + results.length + " · 出口 " + exitIp + (cellular ? " cell" : "");
-  const body = notifyLines.join("\n");
-  // 仅在出口 IP 或加白状态较上次变化时通知，例行 cron 保持安静
-  if (changed) {
-    ctx.notify({ title: "po0 防火墙加白", subtitle: title, body: body });
+  const v = buildView(ctx, results, cellular);
+  const title = `po0 加白 ${v.okCount}/${v.total} · 出口 ${v.exitIp}${cellular ? " 📶" : ""}`;
+
+  // cron / network：只通知，不返回 widget
+  if (!isWidget) {
+    if (changed) {
+      ctx.notify({
+        title: "po0 防火墙加白",
+        subtitle: title,
+        body: notifyLines.join("\n"),
+      });
+    }
+    return;
   }
-  return asWidget(title, lines, okCount === results.length && okCount > 0);
+
+  // generic / 小组件：按尺寸返回 DSL（对齐服务器监控）
+  try {
+    return renderWidget(v, ctx.widgetFamily);
+  } catch (e) {
+    return emptyWidget("渲染失败: " + String((e && e.message) || e));
+  }
 }
