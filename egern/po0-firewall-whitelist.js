@@ -10,7 +10,7 @@
  *   出口 IP 加白。token 走 URL 路径；服务端对已在白名单的 IP 幂等；写满 5 个后按
  *   写入时间 FIFO 淘汰（带 slot 的行永不淘汰）。
  *
- * 模块参数（Egern compat_arguments → ctx.env）：
+ * 模块参数（Egern env_schema → ctx.env，UI 里直接填）：
  *   - tokens：pgnfw_…，多台机器用逗号分割；单条也可写 pgnfw_xxx@N
  *   - slot：  全局默认坑位索引，从 0 起算（0=第1坑，1=第2坑，2=第3坑）；
  *            留空则不固定。token 自带 @N 时优先
@@ -189,7 +189,7 @@ export default async function (ctx) {
     ctx.notify({
       title: "po0 防火墙加白",
       subtitle: "未配置 token",
-      body: "在 Egern 模块参数中填写 tokens（pgnfw_…）；可选填写 slot（从 0 起算：0=第1坑，2=第3坑）",
+      body: "在 Egern 模块参数中填写 Token（pgnfw_…）；可选填写坑位（从 0 起算：0=第1坑，2=第3坑）",
     });
     return;
   }
