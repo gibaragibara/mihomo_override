@@ -181,18 +181,43 @@ function describe(ctx, index, c) {
   return head + "✅ " + st.whitelist.length + "/" + st.limit + "\n    " + ips;
 }
 
+function asWidget(title, body, ok) {
+  // generic / widget 入口时返回简易面板（与 server-monitor 同属 widget DSL）
+  return {
+    type: "widget",
+    padding: [12, 14],
+    gap: 6,
+    children: [
+      {
+        type: "text",
+        text: title,
+        font: { size: "headline", weight: "bold" },
+        textColor: ok ? "#34C759" : "#FF3B30",
+      },
+      {
+        type: "text",
+        text: body,
+        font: { size: "caption1", family: "Menlo" },
+        textColor: "#8E8E93",
+      },
+    ],
+  };
+}
+
 export default async function (ctx) {
   const env = ctx.env || {};
   // env_schema 字段 tokens / slot（也兼容 token 单数别名）
   const defaultSlot = parseGlobalSlot(env.slot);
   const tokens = parseTokens(env.tokens || env.token, defaultSlot);
   if (tokens.length === 0) {
+    const body =
+      "在模块参数中填写 Token（pgnfw_…）；可选填写坑位（从 0 起算：0=第1坑，2=第3坑）";
     ctx.notify({
       title: "po0 防火墙加白",
       subtitle: "未配置 token",
-      body: "在 Egern 模块参数中填写 Token（pgnfw_…）；可选填写坑位（从 0 起算：0=第1坑，2=第3坑）",
+      body: body,
     });
-    return;
+    return asWidget("po0 加白：未配置 token", body, false);
   }
 
   const cellular = onCellular(ctx);
@@ -220,8 +245,10 @@ export default async function (ctx) {
 
   const title =
     "po0 加白 " + okCount + "/" + results.length + " · 出口 " + exitIp + (cellular ? " 📶" : "");
+  const body = lines.join("\n");
   // 仅在出口 IP 或加白状态较上次变化时通知，例行 cron 保持安静
   if (changed) {
-    ctx.notify({ title: "po0 防火墙加白", subtitle: title, body: lines.join("\n") });
+    ctx.notify({ title: "po0 防火墙加白", subtitle: title, body: body });
   }
+  return asWidget(title, body, okCount === results.length);
 }
