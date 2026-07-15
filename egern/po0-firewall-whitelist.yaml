@@ -1,30 +1,33 @@
 name: "po0 防火墙自动加白"
-description: "调用 po0 防火墙 API 将本机当前出口 IP 加入白名单。在模块参数中填写 Token 与坑位。每 10 分钟 + 网络变化时自动加白；加白 API 直连。"
+description: "自动把本机出口 IP 加入 po0 防火墙白名单。网络变化即时 + 每 10 分钟兜底；加白 API 直连。"
 
 env_schema:
   tokens:
     name: Token
-    description: "pgnfw_ 开头的防火墙 token；多台机器用英文逗号分割。也可在单条后写 @槽位（如 pgnfw_xxx@2），会覆盖下方坑位设置。"
+    description: "pgnfw_ 开头的防火墙 token。多台机器用英文逗号分割。也可写 pgnfw_xxx@2 单独指定坑位（优先于下方坑位）。"
     default_value: ""
   slot:
     name: 坑位
-    description: "固定坑位索引，从 0 起算：0=第1坑，1=第2坑，2=第3坑。留空则不固定（按写入时间 FIFO 淘汰）。"
+    description: "固定坑位索引，从 0 起算：0=第1坑，1=第2坑，2=第3坑。留空则不固定。"
     default_value: ""
 
-# 加白 API 必须直连，确保服务端看到的是本机真实出口 IP 而不是代理出口
 rules:
-  - ip_cidr:
-      match: 124.221.69.228/32
-      policy: DIRECT
-      no_resolve: true
+- ip_cidr:
+    match: 124.221.69.228/32
+    policy: DIRECT
+    no_resolve: true
 
 scriptings:
-  - schedule:
-      name: po0-fw-cron
-      cron: "*/10 * * * *"
-      script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
-      timeout: 60
-  - network:
-      name: po0-fw-network
-      script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
-      timeout: 60
+- schedule:
+    name: po0-fw-cron
+    cron: "*/10 * * * *"
+    script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
+    timeout: 60
+- network:
+    name: po0-fw-network
+    script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
+    timeout: 60
+- generic:
+    name: po0-fw-run
+    script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
+    timeout: 60

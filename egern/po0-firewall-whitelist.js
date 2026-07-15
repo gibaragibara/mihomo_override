@@ -183,8 +183,9 @@ function describe(ctx, index, c) {
 
 export default async function (ctx) {
   const env = ctx.env || {};
+  // env_schema 字段 tokens / slot（也兼容 token 单数别名）
   const defaultSlot = parseGlobalSlot(env.slot);
-  const tokens = parseTokens(env.tokens, defaultSlot);
+  const tokens = parseTokens(env.tokens || env.token, defaultSlot);
   if (tokens.length === 0) {
     ctx.notify({
       title: "po0 防火墙加白",
