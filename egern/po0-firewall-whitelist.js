@@ -12,7 +12,8 @@
  *
  * 模块参数（Egern compat_arguments → ctx.env）：
  *   - tokens：pgnfw_…，多台机器用逗号分割；单条也可写 pgnfw_xxx@N
- *   - slot：  全局默认坑位号（如 2）；留空则不固定。token 自带 @N 时优先
+ *   - slot：  全局默认坑位索引，从 0 起算（0=第1坑，1=第2坑，2=第3坑）；
+ *            留空则不固定。token 自带 @N 时优先
  *
  * 加白粒度为 C 段（/24）：服务端把 whitelist 条目和 currentIp 归一化成
  *   x.x.x.0/24 回显，同段换 IP 不产生新写入；匹配用 sameC24() 兼容混杂格式。
@@ -22,7 +23,7 @@ const API_BASE = "https://124.221.69.228/api/firewall/"; // + <token> + "/add"
 const STORE_PREFIX = "po0_fw_";
 const HIST_WINDOW_MS = 24 * 3600 * 1000; // 📶 标记的记账窗口
 
-// 解析全局 slot 参数："" / 空白 → null；"2" → 2
+// 解析全局 slot 参数："" / 空白 → null；"2" → 2（0 起算，2 = 第 3 坑）
 function parseGlobalSlot(raw) {
   if (raw === null || raw === undefined) return null;
   const s = String(raw).trim();
@@ -188,7 +189,7 @@ export default async function (ctx) {
     ctx.notify({
       title: "po0 防火墙加白",
       subtitle: "未配置 token",
-      body: "在 Egern 模块参数中填写 tokens（pgnfw_…）；可选填写 slot（如 2 固定第 2 坑）",
+      body: "在 Egern 模块参数中填写 tokens（pgnfw_…）；可选填写 slot（从 0 起算：0=第1坑，2=第3坑）",
     });
     return;
   }

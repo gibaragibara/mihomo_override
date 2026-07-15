@@ -1,12 +1,12 @@
 name: po0 防火墙自动加白
-description: 调用 po0 防火墙 API 将本机当前出口 IP 加入白名单。在 Egern 模块参数中填写 tokens 与 slot。每 10 分钟 cron + 网络变化时自动加白；加白 API 直连。
+description: 调用 po0 防火墙 API 将本机当前出口 IP 加入白名单。在 Egern 模块参数中填写 tokens 与 slot。slot 从 0 起算（0=第1坑，1=第2坑，2=第3坑）。每 10 分钟 cron + 网络变化自动加白；加白 API 直连。
 author: gibaragibara
 homepage: https://github.com/gibaragibara/mihomo_override
 
 # 安装后在 Egern「模块 → 参数」中填写（仅保存在本机，勿提交仓库）：
 # - tokens: pgnfw_ 开头的 token；多台机器用英文逗号分割
-# - slot:  固定坑位号，如 0/1/2；留空则不固定（按写入时间 FIFO 淘汰）
-# 仍兼容在单个 token 后写 @槽位（如 pgnfw_xxx@2）；token 自带 @ 时优先于全局 slot
+# - slot:  固定坑位索引，从 0 开始（0=第1坑，1=第2坑，2=第3坑）；留空则不固定（FIFO 淘汰）
+# 仍兼容在单个 token 后写 @槽位（如 pgnfw_xxx@2 = 第3坑）；token 自带 @ 时优先于全局 slot
 compat_arguments:
   tokens: ""
   slot: ""
