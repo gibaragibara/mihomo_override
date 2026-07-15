@@ -1,5 +1,5 @@
 name: "po0 防火墙自动加白"
-description: "自动把本机出口 IP 加入 po0 防火墙白名单。网络变化即时 + 每 10 分钟兜底；加白 API 直连。坑位从 0 起算（0=第1坑，2=第3坑）。支持小组件。"
+description: "自动把本机出口 IP 加入 po0 防火墙白名单。网络变化即时 + 每 10 分钟兜底；加白 API 直连。坑位从 0 起算（0=第1坑，2=第3坑）。"
 
 env_schema:
   tokens:
@@ -18,6 +18,10 @@ rules:
     no_resolve: true
 
 scriptings:
+- generic:
+    name: po0 防火墙加白
+    script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
+    timeout: 60
 - schedule:
     name: po0-fw-cron
     cron: "*/10 * * * *"
@@ -25,11 +29,6 @@ scriptings:
     timeout: 60
 - network:
     name: po0-fw-network
-    script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
-    timeout: 60
-# 小组件 / 手动刷新：名称需与 widgets.script_name 完全一致（对齐服务器监控写法）
-- generic:
-    name: po0 防火墙加白
     script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
     timeout: 60
 

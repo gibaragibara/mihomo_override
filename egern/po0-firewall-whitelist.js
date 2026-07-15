@@ -603,18 +603,20 @@ export default async function (ctx) {
   const env = ctx.env || {};
   const defaultSlot = parseGlobalSlot(env.slot);
   const tokens = parseTokens(env.tokens || env.token, defaultSlot);
-  const isWidget = !!ctx.widgetFamily;
+
+  // 与服务器监控一致：generic / 画廊预览 / 主屏幕 都必须 return { type: 'widget', ... }
+  // 没有 widgetFamily 时按 systemMedium 渲染（画廊预览常不带 family）
+  const family = ctx.widgetFamily || "systemMedium";
 
   if (tokens.length === 0) {
     const msg = "请在模块参数填写 Token；可选填写坑位（0=第1坑，2=第3坑）";
-    if (!isWidget) {
+    try {
       ctx.notify({
         title: "po0 防火墙加白",
         subtitle: "未配置 token",
         body: msg,
       });
-      return;
-    }
+    } catch (e) {}
     return emptyWidget(msg);
   }
 
@@ -639,21 +641,19 @@ export default async function (ctx) {
   const v = buildView(ctx, results, cellular);
   const title = `po0 加白 ${v.okCount}/${v.total} · 出口 ${v.exitIp}${cellular ? " 📶" : ""}`;
 
-  // cron / network：只通知，不返回 widget
-  if (!isWidget) {
-    if (changed) {
+  // cron / 切网：状态变化时通知（返回值里的 widget 会被忽略）
+  if (changed) {
+    try {
       ctx.notify({
         title: "po0 防火墙加白",
         subtitle: title,
         body: notifyLines.join("\n"),
       });
-    }
-    return;
+    } catch (e) {}
   }
 
-  // generic / 小组件：按尺寸返回 DSL（对齐服务器监控）
   try {
-    return renderWidget(v, ctx.widgetFamily);
+    return renderWidget(v, family);
   } catch (e) {
     return emptyWidget("渲染失败: " + String((e && e.message) || e));
   }
