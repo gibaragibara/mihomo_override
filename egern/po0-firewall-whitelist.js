@@ -181,24 +181,99 @@ function describe(ctx, index, c) {
   return head + "✅ " + st.whitelist.length + "/" + st.limit + "\n    " + ips;
 }
 
-function asWidget(title, body, ok) {
-  // generic / widget 入口时返回简易面板（与 server-monitor 同属 widget DSL）
+// 构建类似 Surge 面板的内容行（字符串，供通知用）
+function describeLines(ctx, index, c) {
+  const st = c.st;
+  const pin = c.slot !== null && c.slot !== undefined && c.slot !== "" ? " #" + c.slot : "";
+  const head = "#" + (index + 1) + pin + " ";
+  if (st.error) return [head + "X " + st.error];
+  if (st.enabled === false) return [head + "! 防火墙未启用"];
+  if (!st.applied) {
+    return [head + "X 加白未生效 " + ((st.whitelist && st.whitelist.length) || 0) + "/" + st.limit];
+  }
+
+  const hist = readHistory(ctx, c.kvHist);
+  const cellIps = {};
+  hist.forEach(function (e) {
+    if (e.src === "cell") cellIps[e.ip] = true;
+  });
+  const slotOf = st.slotOf || {};
+  const lines = [head + "OK " + st.whitelist.length + "/" + st.limit];
+  st.whitelist.forEach(function (ip) {
+    const slotTag = slotOf[ip] !== undefined ? " #" + slotOf[ip] : "";
+    const cell = cellIps[ip] ? " cell" : "";
+    const cur = sameC24(ip, st.currentIp) ? " <-" : "";
+    lines.push("  " + ip + slotTag + cell + cur);
+  });
+  return lines;
+}
+
+// Egern 小组件 DSL：分行渲染，效果接近 Surge 面板
+function asWidget(title, lines, ok) {
+  const C = {
+    bg: "#1C1C1E",
+    text: "#FFFFFF",
+    muted: "#8E8E93",
+    ok: "#34C759",
+    bad: "#FF3B30",
+    accent: "#0A84FF",
+  };
+  const statusColor = ok ? C.ok : C.bad;
+  const lineNodes = (lines || []).map(function (line) {
+    const isHead = /^#\d/.test(line.trim());
+    return {
+      type: "text",
+      text: line,
+      font: {
+        size: isHead ? "caption1" : 11,
+        weight: isHead ? "semibold" : "regular",
+        family: "Menlo",
+      },
+      textColor: isHead ? C.text : C.muted,
+      maxLines: 2,
+      minScale: 0.7,
+    };
+  });
+
+  const refreshAfter = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
   return {
     type: "widget",
+    backgroundColor: C.bg,
     padding: [12, 14],
-    gap: 6,
+    gap: 4,
+    refreshAfter: refreshAfter,
     children: [
       {
-        type: "text",
-        text: title,
-        font: { size: "headline", weight: "bold" },
-        textColor: ok ? "#34C759" : "#FF3B30",
+        type: "stack",
+        direction: "row",
+        alignItems: "center",
+        gap: 6,
+        children: [
+          {
+            type: "image",
+            src: ok ? "sf-symbol:checkmark.shield.fill" : "sf-symbol:exclamationmark.shield.fill",
+            width: 16,
+            height: 16,
+            color: statusColor,
+          },
+          {
+            type: "text",
+            text: title,
+            font: { size: "subheadline", weight: "bold" },
+            textColor: C.text,
+            maxLines: 2,
+            minScale: 0.7,
+          },
+        ],
       },
       {
-        type: "text",
-        text: body,
-        font: { size: "caption1", family: "Menlo" },
-        textColor: "#8E8E93",
+        type: "stack",
+        direction: "column",
+        gap: 2,
+        children: lineNodes.length
+          ? lineNodes
+          : [{ type: "text", text: "(无数据)", font: { size: "caption1" }, textColor: C.muted }],
       },
     ],
   };
@@ -217,7 +292,7 @@ export default async function (ctx) {
       subtitle: "未配置 token",
       body: body,
     });
-    return asWidget("po0 加白：未配置 token", body, false);
+    return asWidget("po0 加白：未配置 token", [body], false);
   }
 
   const cellular = onCellular(ctx);
@@ -230,11 +305,16 @@ export default async function (ctx) {
   let exitIp = "?";
   let changed = false;
   const lines = [];
+  const notifyLines = [];
   for (let i = 0; i < results.length; i++) {
     const st = results[i].st;
     if (st.applied) okCount++;
     if (st.currentIp) exitIp = st.currentIp;
-    lines.push(describe(ctx, i, results[i]));
+    // 通知仍用带 emoji 的 describe；小组件用纯 ASCII 分行，避免渲染失败
+    notifyLines.push(describe(ctx, i, results[i]));
+    describeLines(ctx, i, results[i]).forEach(function (l) {
+      lines.push(l);
+    });
 
     const state = (st.currentIp || "?") + "|" + (st.applied ? "1" : "0");
     if (ctx.storage.get(results[i].kvState) !== state) {
@@ -244,11 +324,11 @@ export default async function (ctx) {
   }
 
   const title =
-    "po0 加白 " + okCount + "/" + results.length + " · 出口 " + exitIp + (cellular ? " 📶" : "");
-  const body = lines.join("\n");
+    "po0 加白 " + okCount + "/" + results.length + " · 出口 " + exitIp + (cellular ? " cell" : "");
+  const body = notifyLines.join("\n");
   // 仅在出口 IP 或加白状态较上次变化时通知，例行 cron 保持安静
   if (changed) {
     ctx.notify({ title: "po0 防火墙加白", subtitle: title, body: body });
   }
-  return asWidget(title, body, okCount === results.length);
+  return asWidget(title, lines, okCount === results.length && okCount > 0);
 }
