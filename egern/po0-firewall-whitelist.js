@@ -8,8 +8,12 @@
  *
  * 行为：POST https://124.221.69.228/api/firewall/<token>/add[?slot=N]，把本机当前
  *   出口 IP 加白。token 走 URL 路径；服务端对已在白名单的 IP 幂等；写满 5 个后按
- *   写入时间 FIFO 淘汰（带 slot 的行永不淘汰）。token 来自模块参数 tokens
- *   （ctx.env.tokens），可带 @槽位 后缀（pgnfw_xxx@0）钉固定坑位。
+ *   写入时间 FIFO 淘汰（带 slot 的行永不淘汰）。
+ *
+ * 模块参数（Egern compat_arguments → ctx.env）：
+ *   - tokens：pgnfw_…，多台机器用逗号分割；单条也可写 pgnfw_xxx@N
+ *   - slot：  全局默认坑位号（如 2）；留空则不固定。token 自带 @N 时优先
+ *
  * 加白粒度为 C 段（/24）：服务端把 whitelist 条目和 currentIp 归一化成
  *   x.x.x.0/24 回显，同段换 IP 不产生新写入；匹配用 sameC24() 兼容混杂格式。
  */
@@ -18,8 +22,17 @@ const API_BASE = "https://124.221.69.228/api/firewall/"; // + <token> + "/add"
 const STORE_PREFIX = "po0_fw_";
 const HIST_WINDOW_MS = 24 * 3600 * 1000; // 📶 标记的记账窗口
 
-// tokens 分隔符兼容 , | ; 、 空白；每段可带 @槽位 后缀
-function parseTokens(raw) {
+// 解析全局 slot 参数："" / 空白 → null；"2" → 2
+function parseGlobalSlot(raw) {
+  if (raw === null || raw === undefined) return null;
+  const s = String(raw).trim();
+  if (s === "") return null;
+  const n = parseInt(s, 10);
+  return isNaN(n) ? null : n;
+}
+
+// tokens 分隔符兼容 , | ; 、 空白；每段可带 @槽位 后缀（优先于全局 slot）
+function parseTokens(raw, defaultSlot) {
   return String(raw || "")
     .split(/[,|;、\s]+/)
     .map(function (s) {
@@ -30,9 +43,9 @@ function parseTokens(raw) {
     })
     .map(function (s) {
       const at = s.indexOf("@");
-      if (at === -1) return { token: s, slot: null };
+      if (at === -1) return { token: s, slot: defaultSlot };
       const n = parseInt(s.slice(at + 1), 10);
-      return { token: s.slice(0, at), slot: isNaN(n) ? null : n };
+      return { token: s.slice(0, at), slot: isNaN(n) ? defaultSlot : n };
     });
 }
 
@@ -168,12 +181,14 @@ function describe(ctx, index, c) {
 }
 
 export default async function (ctx) {
-  const tokens = parseTokens(ctx.env && ctx.env.tokens);
+  const env = ctx.env || {};
+  const defaultSlot = parseGlobalSlot(env.slot);
+  const tokens = parseTokens(env.tokens, defaultSlot);
   if (tokens.length === 0) {
     ctx.notify({
       title: "po0 防火墙加白",
       subtitle: "未配置 token",
-      body: "模块参数 tokens 填入 pgnfw_ token，多个用英文逗号分割",
+      body: "在 Egern 模块参数中填写 tokens（pgnfw_…）；可选填写 slot（如 2 固定第 2 坑）",
     });
     return;
   }

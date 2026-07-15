@@ -1,12 +1,15 @@
 name: po0 防火墙自动加白
-description: 调用 po0 防火墙 API 将本机当前出口 IP 加入白名单。支持多 token（英文逗号分割）。每 10 分钟 cron + 网络变化时自动加白。加白 API 走直连。可选 token 后加 @槽位（如 pgnfw_xxx@2）钉固定坑位。
+description: 调用 po0 防火墙 API 将本机当前出口 IP 加入白名单。在 Egern 模块参数中填写 tokens 与 slot。每 10 分钟 cron + 网络变化时自动加白；加白 API 直连。
 author: gibaragibara
 homepage: https://github.com/gibaragibara/mihomo_override
 
-# 安装后在模块参数 tokens 填入你的 pgnfw_ token（切勿提交到公开仓库）。
-# 多台机器用英文逗号分割；可选 @槽位，例如 pgnfw_xxx@2 固定 slot2。
+# 安装后在 Egern「模块 → 参数」中填写（仅保存在本机，勿提交仓库）：
+# - tokens: pgnfw_ 开头的 token；多台机器用英文逗号分割
+# - slot:  固定坑位号，如 0/1/2；留空则不固定（按写入时间 FIFO 淘汰）
+# 仍兼容在单个 token 后写 @槽位（如 pgnfw_xxx@2）；token 自带 @ 时优先于全局 slot
 compat_arguments:
   tokens: ""
+  slot: ""
 
 # 加白 API 必须直连，确保服务端看到的是本机真实出口 IP 而不是代理出口
 rules:
@@ -23,9 +26,11 @@ scriptings:
       timeout: 60
       env:
         tokens: "{{{tokens}}}"
+        slot: "{{{slot}}}"
   - network:
       name: po0-fw-network
       script_url: https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/egern/po0-firewall-whitelist.js
       timeout: 60
       env:
         tokens: "{{{tokens}}}"
+        slot: "{{{slot}}}"
