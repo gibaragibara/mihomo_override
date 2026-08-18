@@ -18,9 +18,9 @@
 转换规则：
 
 - `DOMAIN` -> `2, value`：297 条。Anywhere 当前没有精确域名类型，所以映射为域名后缀，匹配范围会略宽。
-- `DOMAIN-SUFFIX` -> `2, value`：111334 条。
+- `DOMAIN-SUFFIX` -> `2, value`：111335 条。
 - `DOMAIN-KEYWORD` -> `3, value`：13 条。
-- `IP-CIDR` -> `0, value`：8187 条。
+- `IP-CIDR` -> `0, value`：8186 条。
 - `IP-CIDR6` -> `1, value`：3976 条。
 - 跳过 `PROCESS-NAME`：14 条。
 - 跳过 `IP-ASN`：1 条。
