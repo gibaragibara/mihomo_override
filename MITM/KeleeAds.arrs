@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 441
+# Rules: 442
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -269,6 +269,7 @@ routing = 2
 2, xdplt.com
 2, ads.cup.com.cn
 2, adjust.com
+2, adjust.io
 2, adjust.net.in
 2, app-analytics-services.com
 2, odm.app-ads-services.com
