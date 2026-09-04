@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 442
+# Rules: 443
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -142,6 +142,7 @@ routing = 2
 2, gdt.qq.com
 2, l.qq.com
 2, imtmp.net
+2, gdtimg.com
 2, ugdtimg.com
 2, opadlink.com
 2, staevent.work
