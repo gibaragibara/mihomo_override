@@ -9,7 +9,7 @@
 - https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/ChinaMax/ChinaMax-001.arrs
 - https://raw.githubusercontent.com/gibaragibara/mihomo_override/main/ChinaMax/ChinaMax-002.arrs
 
-已转换规则数：123752
+已转换规则数：123772
 
 分片数量：2
 
@@ -18,7 +18,7 @@
 转换规则：
 
 - `DOMAIN` -> `2, value`：268 条。Anywhere 当前没有精确域名类型，所以映射为域名后缀，匹配范围会略宽。
-- `DOMAIN-SUFFIX` -> `2, value`：111014 条。
+- `DOMAIN-SUFFIX` -> `2, value`：111034 条。
 - `DOMAIN-KEYWORD` -> `3, value`：13 条。
 - `IP-CIDR` -> `0, value`：8245 条。
 - `IP-CIDR6` -> `1, value`：4212 条。
