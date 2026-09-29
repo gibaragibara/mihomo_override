@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 445
+# Rules: 449
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -372,6 +372,10 @@ routing = 2
 2, amdc.alipay.com
 2, ucdc.upaas.quark.cn
 2, httpdns.danuoyi.tbcache.com
+2, xpis-xcdn.youku.com
+2, pre-xpis-xcdn.youku.com
+2, xpis-tel-xcdn.youku.com
+2, xpis-mob-xcdn.youku.com
 2, httpdns.cctv.com
 2, httpdns-browser.platform.dbankcloud.cn
 2, httpdns.huaweicloud.com
