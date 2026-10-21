@@ -88,8 +88,14 @@ python3 scripts/plugin2amrs.py --batch --merge
 | `[Script] script-path=...` | 带 Surge/Loon 兼容层的 `script` 规则 |
 | `[Rule] ... REJECT` | 合并进 `KeleeAds.arrs` |
 
+也兼容 Loon 3.5+ 的新写法
+`request/response if ${url} ~= /正则/i then ...`，包括
+`reject` / `reject_dict` / `reject_img`、`script(...)`、
+`response.json.delete/replace/jq/jq_file`、`response.body.mock`、`response.header.add`。
+无法识别的动作会写进生成文件顶部的 `# WARN:` 注释，不会让 workflow 失败。
+
 ## 已知限制
 
-- 合并后约 425 条 MITM 规则、443 条路由规则，远低于 Anywhere 单文件上限。
+- 合并后约 540 条 MITM 规则、446 条路由规则，远低于 Anywhere 单文件上限。
 - **复杂 JQ 表达式**、**Protobuf 脚本**、**307 重定向带捕获组**（QQ_Redirect）等个别规则可能无法转换。
 - 生成文件顶部的 `# WARN:` 注释会列出未能自动转换的规则。

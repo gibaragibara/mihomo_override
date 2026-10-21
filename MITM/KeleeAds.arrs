@@ -29,7 +29,7 @@ routing = 2
 #   - https://kelee.one/Tool/Loon/Lpx/YouTube_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/QQMusic_remove_ads.lpx
 #   - https://kelee.one/Tool/Loon/Lpx/12306_remove_ads.lpx
-# Rules: 449
+# Rules: 446
 
 # --- 广告平台拦截器 (https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx) ---
 3, adstrategy
@@ -469,10 +469,6 @@ routing = 2
 2, e.jparking.cn
 # --- 什么值得买去广告 (https://kelee.one/Tool/Loon/Lpx/smzdm_remove_ads.lpx) ---
 2, adx-api.zdmimg.com
-# --- 高德地图去广告 (https://kelee.one/Tool/Loon/Lpx/Amap_remove_ads.lpx) ---
-2, amap-aos-info-nogw.amap.com
-2, free-aos-cdn-image.amap.com
-2, v.smtcdns.com
 # --- 斗鱼去广告 (https://kelee.one/Tool/Loon/Lpx/Douyu_remove_ads.lpx) ---
 2, stun1.douyucdn.cn
 2, stun1.qvb.qcloud.com

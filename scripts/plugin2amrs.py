@@ -190,6 +190,202 @@ def encode_script_rule(phase: int, pattern: str, script_source: str) -> Optional
     return f"{phase}, 100, {pattern}, {payload}"
 
 
+NEW_RULE_RE = re.compile(
+    r"^(?P<phase>request|response)\s+if\s+\$\{url\}\s*~=\s*/(?P<pattern>.+)/(?P<flags>[a-z]*)"
+    r"\s+then\s+(?P<action>.+)$"
+)
+
+NEW_CALL_RE = re.compile(
+    r"^(?P<name>[\w.]+)\s*\((?P<args>.*)\)\s*(?:with\s+(?P<opts>.+))?$",
+    re.S,
+)
+
+
+def split_call_args(text: str) -> List[str]:
+    """Split a JS-ish argument list on top-level commas."""
+    args: List[str] = []
+    current: List[str] = []
+    depth = 0
+    quote = ""
+    escaped = False
+    for ch in text:
+        if escaped:
+            current.append(ch)
+            escaped = False
+            continue
+        if ch == "\\":
+            current.append(ch)
+            escaped = True
+            continue
+        if quote:
+            current.append(ch)
+            if ch == quote:
+                quote = ""
+            continue
+        if ch in "\"'":
+            quote = ch
+            current.append(ch)
+            continue
+        if ch in "([{":
+            depth += 1
+            current.append(ch)
+            continue
+        if ch in ")]}":
+            depth -= 1
+            current.append(ch)
+            continue
+        if ch == "," and depth == 0:
+            args.append("".join(current).strip())
+            current = []
+            continue
+        current.append(ch)
+
+    tail = "".join(current).strip()
+    if tail or args:
+        args.append(tail)
+    return args
+
+
+def unquote_arg(text: str) -> str:
+    value = text.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        value = value[1:-1]
+        value = value.replace('\\"', '"').replace("\\'", "'")
+        value = value.replace("\\/", "/").replace("\\\\", "\\")
+    return value
+
+
+def parse_js_list(text: str) -> Optional[List[str]]:
+    value = text.strip()
+    if not (value.startswith("[") and value.endswith("]")):
+        return None
+    inner = value[1:-1].strip()
+    return split_call_args(inner) if inner else []
+
+
+def json_path(path: str) -> str:
+    value = unquote_arg(path)
+    if not value.startswith("$"):
+        value = "$." + value
+    return value
+
+
+def parse_new_rule(line: str, warnings: List[str]) -> Optional[List[str]]:
+    """Parse Loon 3.5+ `request/response if ${url} ~= /re/i then action(...)` lines."""
+    match = NEW_RULE_RE.match(line.strip())
+    if not match:
+        return None
+
+    phase = 0 if match.group("phase") == "request" else 1
+    pattern = match.group("pattern")
+    action = match.group("action").strip()
+
+    call = NEW_CALL_RE.match(action)
+    if not call:
+        warnings.append(f"unsupported action: {action[:120]}")
+        return []
+
+    name = call.group("name")
+    args = split_call_args(call.group("args"))
+    opts = call.group("opts") or ""
+
+    if name == "reject_dict":
+        return [f"0, 0, {pattern}, 2, " + quote_csv("{}")]
+    if name in {"reject", "reject_img", "reject_tinygif"}:
+        return [f"0, 0, {pattern}, 3"]
+
+    if name == "script":
+        if not args:
+            warnings.append(f"missing script url: {action[:120]}")
+            return []
+        script_url = unquote_arg(args[0])
+        try:
+            script_source = fetch_text(script_url)
+        except Exception as exc:
+            warnings.append(f"failed to fetch script {script_url}: {exc}")
+            return []
+        is_binary = "binary-body-mode=true" in opts
+        wrapped = wrap_external_script(script_source, {}, is_binary)
+        rule = encode_script_rule(phase, pattern, wrapped)
+        return [rule] if rule else []
+
+    if name == "response.header.add":
+        if len(args) < 2:
+            warnings.append(f"missing header name/value: {action[:120]}")
+            return []
+        header_name = unquote_arg(args[0])
+        header_value = quote_csv(unquote_arg(args[1]))
+        return [f"1, 1, {pattern}, {header_name}, {header_value}"]
+
+    if name == "response.body.mock":
+        if len(args) < 2:
+            warnings.append(f"missing mock body: {action[:120]}")
+            return []
+        body = unquote_arg(args[1])
+        is_base64 = len(args) >= 4 and args[3].strip().lower() == "true"
+        if is_base64:
+            return [f"0, 0, {pattern}, 4, {body}"]
+        return [f"0, 0, {pattern}, 2, " + quote_csv(body)]
+
+    if name == "response.json.delete":
+        if not args:
+            warnings.append(f"missing json path: {action[:120]}")
+            return []
+        paths = parse_js_list(args[0])
+        if paths is None:
+            paths = [args[0]]
+        return [f"1, 5, {pattern}, delete, {json_path(path)}" for path in paths if path.strip()]
+
+    if name == "response.json.replace":
+        if len(args) < 2:
+            warnings.append(f"missing json replace args: {action[:120]}")
+            return []
+        paths = parse_js_list(args[0])
+        if paths is None:
+            paths = [args[0]]
+        values = parse_js_list(args[1])
+        if values is None:
+            values = [args[1]]
+        if len(paths) != len(values):
+            warnings.append(f"json replace path/value count mismatch: {action[:120]}")
+        return [
+            f"1, 5, {pattern}, replace, {json_path(path)}, {quote_csv(unquote_arg(value))}"
+            for path, value in zip(paths, values)
+            if path.strip()
+        ]
+
+    if name == "response.json.jq":
+        if not args:
+            warnings.append(f"missing jq expression: {action[:120]}")
+            return []
+        script = jq_inline_to_script(unquote_arg(args[0]))
+        rule = encode_script_rule(
+            1, pattern, SHIM_PATH.read_text(encoding="utf-8") + "\n\n" + script
+        )
+        return [rule] if rule else []
+
+    if name == "response.json.jq_file":
+        if not args or not unquote_arg(args[0]):
+            warnings.append(f"missing jq_file url: {action[:120]}")
+            return []
+        jq_url = unquote_arg(args[0])
+        try:
+            jq_source = fetch_text(jq_url)
+        except Exception as exc:
+            warnings.append(f"failed to fetch jq_file {jq_url}: {exc}")
+            return []
+        script = jq_file_to_script(jq_source)
+        if not script:
+            return []
+        rule = encode_script_rule(
+            1, pattern, SHIM_PATH.read_text(encoding="utf-8") + "\n\n" + script
+        )
+        return [rule] if rule else []
+
+    warnings.append(f"unsupported action: {action[:120]}")
+    return []
+
+
 def parse_rewrite_line(
     line: str,
     warnings: List[str],
@@ -197,6 +393,10 @@ def parse_rewrite_line(
     stripped = line.strip()
     if not stripped or stripped.startswith("#"):
         return []
+
+    new_rules = parse_new_rule(stripped, warnings)
+    if new_rules is not None:
+        return new_rules
 
     # response-header-add
     header_add = re.match(
@@ -247,8 +447,8 @@ def parse_rewrite_line(
         warnings.append(f"unsupported mock-response-body: {stripped[:120]}")
         return []
 
-    if "response-body-json-del" in middle:
-        path_match = re.search(r"response-body-json-del\s+(\S+)", middle)
+    if "response-body-json-del" in stripped:
+        path_match = re.search(r"response-body-json-del\s+(\S+)", stripped)
         if path_match:
             path = path_match.group(1)
             if not path.startswith("$"):
@@ -258,7 +458,7 @@ def parse_rewrite_line(
 
     json_replace = re.search(
         r"response-body-json-replace\s+(\S+)\s+(.+)$",
-        middle,
+        stripped,
     )
     if json_replace:
         path = json_replace.group(1)
@@ -312,6 +512,10 @@ def parse_script_line(
     stripped = line.strip()
     if not stripped or stripped.startswith("#"):
         return []
+
+    new_rules = parse_new_rule(stripped, warnings)
+    if new_rules is not None:
+        return new_rules
 
     phase = 1 if stripped.startswith("http-response") else 0 if stripped.startswith("http-request") else None
     if phase is None:
@@ -646,7 +850,7 @@ def main() -> int:
                 if len(warnings) > 3:
                     print(f"     warn: ... {len(warnings) - 3} more")
                 if not result.rules and not result.routing_rules:
-                    failures += 1
+                    print("     warn: no convertible rules (skipped)")
                 continue
 
             amrs_path, arrs_path, warnings = write_split_outputs(source_label, result, output_dir)
@@ -677,7 +881,9 @@ def main() -> int:
                 print(f"     warn: {warning}")
             if len(warnings) > 5:
                 print(f"     warn: ... {len(warnings) - 5} more")
-            if not amrs_path and not arrs_path:
+            if not amrs_path:
+                # The MITM rule set is the primary deliverable; fail loudly when it
+                # disappears entirely (e.g. upstream changed the LPX format again).
                 failures += 1
         except Exception as exc:
             failures += 1
